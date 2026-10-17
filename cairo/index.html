@@ -1,0 +1,1403 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f4f1ea">
+<meta name="description" content="Cairo — An exclusive watch concept. Discover the movement, explore the collection, and compose your own timepiece.">
+<title>Cairo — Time, on your terms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/"}}</script>
+<script>window.__errs=[];addEventListener("error",e=>{window.__errs.push(e.message+" @"+(e.filename||"")+":"+e.lineno);window.__initError=window.__errs.join(" | ")});addEventListener("unhandledrejection",e=>{window.__errs.push("rejection: "+(e.reason&&e.reason.message||e.reason));window.__initError=window.__errs.join(" | ")});</script>
+<style>
+:root{
+  --paper:#f4f1ea;--ink:#171512;--ink-2:rgba(23,21,18,.7);--ink-3:rgba(23,21,18,.44);--line:rgba(23,21,18,.18);--line-2:rgba(23,21,18,.09);
+  --gold:#9a7b45;
+  --pad:clamp(28px,4.2vw,76px);
+  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --body:'EB Garamond',Georgia,'Times New Roman',serif;
+  --ease:cubic-bezier(.2,.7,.1,1);--ease-io:cubic-bezier(.65,0,.15,1);
+}
+.dark,body.is-dark{--paper:#0e0d0c;--ink:#f1eee6;--ink-2:rgba(241,238,230,.68);--ink-3:rgba(241,238,230,.44);--line:rgba(241,238,230,.18);--line-2:rgba(241,238,230,.09)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body.has-cursor,body.has-cursor a,body.has-cursor button,body.has-cursor input{cursor:none}
+::selection{background:var(--ink);color:var(--paper)}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+em{font-style:italic}
+
+/* ── ornaments: engraved SVG drawings composited as ink on paper ── */
+.orn{display:block;pointer-events:none;user-select:none}
+.dark .orn,.is-dark .orn-fixed,.orn-inv{filter:invert(1)}
+.orn-corners{position:fixed;inset:0;z-index:45;pointer-events:none}
+.orn-corners img{position:absolute;width:clamp(44px,4.2vw,62px);opacity:.85;transition:opacity .6s,filter .6s}
+.orn-corners .tl{left:9px;top:9px}.orn-corners .tr{right:9px;top:9px;transform:scaleX(-1)}.orn-corners .bl{left:9px;bottom:9px;transform:scaleY(-1)}.orn-corners .br{right:9px;bottom:9px;transform:scale(-1)}
+.divider{height:26px;width:auto;max-width:100%}
+.divider.sm{height:18px}
+.flourish{height:22px;width:auto}
+.seal{position:relative;width:60px;height:60px;display:grid;place-items:center;flex:none;font-family:var(--serif);font-weight:500;font-size:24px;line-height:1;color:var(--ink)}
+.seal img{position:absolute;inset:0;width:100%;height:100%}
+.seal b{font-weight:500;position:relative;transform:translateY(1px)}
+.seal.sm{width:44px;height:44px;font-size:17px}
+.crest{width:clamp(60px,5.6vw,84px);height:auto}
+.mani{height:20px;width:auto}
+.mani.down{transform:rotate(90deg)}
+.fl{list-style:none;margin:0;padding:0}
+.fl li{position:relative;padding-left:26px}
+.fl li:before{content:"";position:absolute;left:0;top:.42em;width:14px;height:14px;background:url("https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Ffleuron.png?alt=media&token=f816fffd-c5d3-408e-9632-d7d70b5e7460") center/contain no-repeat;opacity:.85}
+.dark .fl li:before{filter:invert(1)}
+
+/* ── type ── */
+.eyebrow{font-family:var(--body);font-weight:500;font-size:14px;line-height:1.3;letter-spacing:.16em;font-variant:all-small-caps;color:var(--ink-2)}
+.display{font-family:var(--serif);font-weight:400;font-size:clamp(88px,14.5vw,250px);line-height:.84;letter-spacing:-.015em}
+.h2{font-family:var(--serif);font-weight:400;font-size:clamp(44px,5.6vw,96px);line-height:.96;letter-spacing:-.01em;margin:0}
+.h3{font-family:var(--serif);font-weight:500;font-size:clamp(30px,3vw,46px);line-height:1.05;letter-spacing:-.005em;margin:0}
+.lead{font-family:var(--serif);font-weight:400;font-size:clamp(24px,1.9vw,31px);line-height:1.26;letter-spacing:0;margin:0}
+.body{font-family:var(--body);font-size:17px;line-height:1.6;color:var(--ink-2);margin:0}
+.body+.body{margin-top:1em}
+.num{font-variant-numeric:lining-nums tabular-nums}
+
+/* ── reveal system ── */
+.w{display:inline-block;overflow:hidden;vertical-align:top;padding:.04em .02em .14em;margin:-.04em -.02em -.14em}
+.w>span{display:inline-block;transform:translateY(112%);transition:transform 1.1s var(--ease);transition-delay:calc(var(--i,0)*38ms + var(--d,0ms));will-change:transform}
+.in .w>span{transform:none}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 1s var(--ease),transform 1.1s var(--ease);transition-delay:var(--d,0ms)}
+.reveal.in{opacity:1;transform:none}
+.reveal-w{opacity:1}
+.fade{opacity:0;transition:opacity .9s var(--ease) var(--d,0ms),transform 1s var(--ease) var(--d,0ms);transform:translateY(16px)}
+.fade.in{opacity:1;transform:none}
+.line-in{position:relative}
+.line-in:after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--line);transform:scaleX(0);transform-origin:left;transition:transform 1.2s var(--ease) var(--d,0ms)}
+.in.line-in:after{transform:none}
+
+/* ── loader ── */
+#loader{position:fixed;inset:0;z-index:200;background:var(--paper);display:grid;place-items:center;transition:opacity .9s var(--ease-io),visibility .9s}
+.loaded #loader{opacity:0;visibility:hidden}
+.loader-inner{display:grid;justify-items:center;gap:14px}
+.loader-inner img{width:84px}
+.loader-mark{font-family:var(--serif);font-size:30px;letter-spacing:.02em;line-height:1}
+.loader-line{width:120px;height:1px;background:var(--line);overflow:hidden}
+.loader-line:after{content:"";display:block;height:100%;background:var(--ink);transform:scaleX(0);transform-origin:left;animation:load 1.8s var(--ease-io) forwards}
+@keyframes load{to{transform:none}}
+
+/* ── cursor ── */
+.cursor{position:fixed;left:0;top:0;width:8px;height:8px;border-radius:50%;background:#fff;mix-blend-mode:difference;z-index:300;pointer-events:none;transform:translate(-50%,-50%);transition:width .3s var(--ease),height .3s var(--ease),opacity .3s;opacity:0}
+.has-cursor .cursor{opacity:1}
+.cursor.on{width:40px;height:40px}
+.cursor.grab{width:56px;height:56px}
+.cursor span{position:absolute;inset:0;display:grid;place-items:center;font:500 11px/1 var(--body);letter-spacing:.14em;font-variant:all-small-caps;color:#fff;opacity:0;transition:opacity .25s}
+.cursor.grab span{opacity:1}
+body.dragging .cursor{width:24px;height:24px}
+
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:5;pointer-events:none}
+
+/* ── nav ── */
+.nav{position:fixed;z-index:50;top:0;left:0;right:0;height:76px;padding:0 calc(var(--pad) + 26px);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;color:var(--ink);transition:color .6s;pointer-events:none}
+.nav>*{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--serif);font-size:24px;font-weight:500;letter-spacing:.01em;line-height:1;white-space:nowrap}
+.brand .orn{width:34px;height:34px}
+.nav-chapter{display:flex;gap:12px;align-items:center;justify-content:center}
+.nav-chapter .eyebrow{color:var(--ink)}
+.nav-chapter .sep{width:6px;height:6px;background:url("https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Ffleuron.png?alt=media&token=f816fffd-c5d3-408e-9632-d7d70b5e7460") center/contain no-repeat;opacity:.7}
+.dark .nav-chapter .sep,.is-dark .nav-chapter .sep{filter:invert(1)}
+.nav-chapter #chapName{position:relative;display:inline-block;min-width:8ch}
+.nav-chapter.no-num #chapLabel,.nav-chapter.no-num .sep{display:none}
+.nav-progress{position:absolute;left:0;bottom:0;height:1px;width:100%;background:var(--ink);transform-origin:left;transform:scaleX(0);opacity:.5}
+
+/* cartouche buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:56px;padding:2px 1.2em 0;border:solid transparent;border-width:0 2.5em;border-image:url("https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fbutton.png?alt=media&token=7e573cd0-0aea-4b6a-91ab-e72536d493f2") 0 16% fill / 0 2.5em / 0 stretch;font:500 15px var(--body);font-variant:all-small-caps;letter-spacing:.16em;color:var(--ink);background:transparent;white-space:nowrap;transition:transform .4s var(--ease),opacity .4s;position:relative}
+.btn:hover{transform:translateY(-2px)}
+.btn.sm{min-height:44px;font-size:13.5px;border-width:0 2em;border-image-width:0 2em;padding:1px .6em 0}
+.btn.inv{color:#171512;filter:invert(1)}
+.dark .btn{color:#171512;filter:invert(1)}
+.btn.solid{border:0;border-image:none;background:var(--ink);color:var(--paper);border-radius:999px;padding:0 28px;filter:none}
+.pill{justify-self:end}
+
+.index{position:fixed;z-index:50;right:var(--pad);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:7px;align-items:flex-end;color:var(--ink);transition:color .6s,opacity .5s var(--ease),transform .6s var(--ease)}
+.index a{display:flex;flex-direction:row-reverse;align-items:center;gap:10px;font-family:var(--serif);font-weight:500;font-size:14px;line-height:1.2;letter-spacing:.06em;opacity:.4;transition:opacity .4s;min-height:16px}
+.index a:before{content:"";width:5px;height:5px;border-radius:50%;border:1px solid currentColor;transition:background .4s,transform .4s;flex:none}
+.index a.active{opacity:1}
+.index a.active:before{background:currentColor;transform:scale(1.3)}
+.index a:hover{opacity:.9}
+.index.hide{opacity:0;pointer-events:none;transform:translate(8px,-50%)}
+
+/* ── layout primitives ── */
+.pin{position:relative}
+.pin .sticky{position:sticky;top:0;height:100svh;overflow:hidden;z-index:10;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+.stage-grid{position:absolute;inset:0;padding:calc(84px + 1vh) var(--pad) 6vh;display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);grid-template-rows:auto 1fr auto;column-gap:4vw}
+.col-l{grid-column:1;grid-row:1;max-width:580px}
+.col-r{grid-column:2;grid-row:1;justify-self:end;max-width:400px;align-self:start;padding-top:.5em}
+.foot-l{grid-column:1;grid-row:3;align-self:end;max-width:440px}
+.foot-r{grid-column:2;grid-row:3;align-self:end;justify-self:end;text-align:right}
+.ch{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.ch .divider.sm{height:14px;opacity:.7}
+.wrap{padding:0 var(--pad)}
+section{background:var(--paper)}
+.dark{background:#0e0d0c;color:var(--ink)}
+.dark ::selection{background:#f1eee6;color:#0e0d0c}
+
+/* ── hero ── */
+.hero{height:340vh}
+.hero-title{position:fixed;inset:0;z-index:1;pointer-events:none;color:var(--ink)}
+.hero-title .l1{position:absolute;left:calc(var(--pad) - .03em);top:24vh}
+.hero-title .l2{position:absolute;right:calc(var(--pad) - .02em);bottom:17vh}
+.hero-crest{position:absolute;left:50%;top:calc(72px + 1.5vh);transform:translateX(-50%);display:grid;justify-items:center;gap:8px;text-align:center;pointer-events:none}
+.hero-ui{position:absolute;inset:0;padding:0 var(--pad) 6vh;display:grid;grid-template-columns:1fr auto 1fr;align-items:end;pointer-events:none}
+.hero-intro{max-width:320px;pointer-events:auto;display:grid;gap:14px}
+.scroll-cue{display:flex;flex-direction:column;align-items:center;gap:12px;justify-self:center;color:var(--ink-2);margin-bottom:2px}
+.scroll-cue .mani{animation:cue 2.4s var(--ease-io) infinite}
+@keyframes cue{0%,100%{transform:rotate(90deg) translateX(0)}50%{transform:rotate(90deg) translateX(8px)}}
+.hero-meta{justify-self:end;text-align:right;color:var(--ink-2);display:grid;gap:4px;justify-items:end}
+.hero-meta b{font-weight:400;color:var(--ink)}
+.manifesto{position:absolute;left:var(--pad);bottom:9vh;margin:0;width:min(760px,58vw);opacity:0;pointer-events:none}
+
+/* ── stone ── */
+.stone{height:460vh}
+.carat{display:flex;align-items:baseline;gap:18px}
+.carat-num{font-family:var(--serif);font-weight:300;font-size:clamp(100px,12.5vw,210px);line-height:.85;letter-spacing:-.02em;display:inline-flex}
+.carat-num i{font-style:normal;display:inline-block;text-align:center;width:.5em}
+.carat-num i.dot{width:.22em}
+.specs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,auto);gap:0 clamp(24px,3vw,56px);text-align:left}
+.specs li{display:flex;flex-direction:column;gap:10px;padding-top:14px;border-top:1px solid var(--line)}
+.specs .h3{font-size:clamp(24px,2.3vw,36px);font-weight:400}
+.stone-lead{max-width:380px;margin-top:22px}
+
+/* ── settings ── */
+.settings{height:560vh}
+.set-name{overflow:hidden;position:relative;min-height:1.05em}
+.set-name .line{display:block;transition:transform 1s var(--ease),opacity .8s var(--ease)}
+.set-name .line.exit{position:absolute;left:0;top:0;transform:translateY(-105%);opacity:0}
+.set-name .line.enter{transform:translateY(105%);opacity:0}
+.set-flourish{margin-top:18px;opacity:.8}
+.set-desc{transition:opacity .6s var(--ease),transform .7s var(--ease)}
+.set-desc.out{opacity:0;transform:translateY(10px)}
+.set-specs{list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column}
+.set-specs li{padding:11px 0 11px 26px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:24px;transition:opacity .5s var(--ease),transform .6s var(--ease);position:relative}
+.set-specs li:before{content:"";position:absolute;left:0;top:16px;width:13px;height:13px;background:url("https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Ffleuron.png?alt=media&token=f816fffd-c5d3-408e-9632-d7d70b5e7460") center/contain no-repeat;opacity:.8}
+.set-specs li span:last-child{color:var(--ink);font-family:var(--serif);font-size:19px;font-weight:500}
+.set-specs.out li{opacity:0;transform:translateY(8px)}
+.rail{position:absolute;left:var(--pad);right:var(--pad);bottom:6vh;display:flex;gap:6px;align-items:center}
+.rail i{flex:1;height:1px;background:var(--line);position:relative;overflow:hidden}
+.rail i:after{content:"";position:absolute;inset:0;background:var(--ink);transform:scaleX(var(--f,0));transform-origin:left}
+.rail-lbl{position:absolute;right:var(--pad);bottom:calc(6vh + 16px)}
+.set-count{position:absolute;left:var(--pad);bottom:calc(6vh + 16px);font-family:var(--serif);font-size:20px;font-weight:500;letter-spacing:.04em}
+
+/* ── anatomy ── */
+.anatomy{height:520vh}
+.tags{position:absolute;inset:0;pointer-events:none}
+.tag{position:absolute;left:0;top:0;display:flex;align-items:center;gap:0;opacity:0;transform:translate(-50%,-50%);white-space:nowrap}
+.tag i{width:6px;height:6px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 4px var(--paper);flex:none}
+.tag b{display:block;width:var(--len,64px);height:1px;background:var(--ink);opacity:.5;transform-origin:left;transform:scaleX(var(--k,1))}
+.tag span{font-family:var(--body);font-weight:500;font-size:14px;letter-spacing:.14em;font-variant:all-small-caps;padding:0 10px;transform:translateX(calc((1 - var(--k,1))*-1*var(--len,64px)))}
+.tag.left{flex-direction:row-reverse;transform:translate(calc(-100% + 3px),-50%)}
+.tag.left b{transform-origin:right}
+.tag.left span{transform:translateX(calc((1 - var(--k,1))*var(--len,64px)))}
+.anatomy-note{max-width:360px}
+
+/* ── atelier ── */
+.atelier{height:180vh}
+.atelier .sticky{position:sticky;top:0;height:100svh;z-index:10}
+.atelier-grid{position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(380px,520px);padding:72px var(--pad) 0 0}
+.stage{position:relative;height:100%;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+.stage-hint{position:absolute;left:var(--pad);bottom:6vh;display:flex;align-items:center;gap:12px}
+.stage-name{position:absolute;left:var(--pad);top:2vh}
+.stage-name .h3{margin-top:10px;max-width:440px}
+.panel{position:relative;display:flex;flex-direction:column;justify-content:center;justify-content:safe center;padding:1.5vh 26px 2vh;overflow:auto;scrollbar-width:none;margin:1vh 0 1.5vh;background:var(--paper)}
+.panel::-webkit-scrollbar{display:none}
+.panel .pc{position:absolute;width:48px;height:48px;background:url("https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fcorner.png?alt=media&token=5512429b-1a2c-4b60-92d8-2255e609cc69") center/contain no-repeat;opacity:.8;pointer-events:none}
+.panel .pc.tl{left:0;top:0}.panel .pc.tr{right:0;top:0;transform:scaleX(-1)}.panel .pc.bl{left:0;bottom:0;transform:scaleY(-1)}.panel .pc.br{right:0;bottom:0;transform:scale(-1)}
+.panel .h2{font-size:clamp(34px,3.4vw,46px);margin-bottom:8px}
+.panel .divider{margin:0 0 8px;height:20px}
+.opt{border-top:1px solid var(--line);padding:9px 0}
+.opt-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.opt-head .val{color:var(--ink)}
+.chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(68px,1fr));gap:7px}
+.chip{display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 3px 6px;border:1px solid var(--line);border-radius:3px;font:500 14px var(--body);font-variant:all-small-caps;letter-spacing:.08em;color:var(--ink-2);transition:background .35s,color .35s,border-color .35s,transform .35s var(--ease);position:relative}
+.chip .ico{width:30px;height:30px;object-fit:contain;display:block;transition:filter .35s}
+.chip:hover{border-color:var(--ink);color:var(--ink)}
+.chip:focus,.sw:focus,.btn:focus,.link:focus{outline:none}
+.chip:focus-visible,.sw:focus-visible,.btn:focus-visible{outline:1px solid var(--ink);outline-offset:3px}
+.chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.chip.on .ico{filter:invert(1)}
+.swatches{display:flex;gap:10px}
+.sw{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0,var(--c) 34%,color-mix(in srgb,var(--c) 70%,#000) 100%);border:1px solid var(--line);position:relative;transition:transform .35s var(--ease)}
+.sw:after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid var(--ink);opacity:0;transform:scale(.8);transition:opacity .35s,transform .35s var(--ease)}
+.sw.on:after{opacity:1;transform:none}
+.sw:hover{transform:translateY(-2px)}
+.range{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;margin:0}
+.range::-webkit-slider-runnable-track{height:1px;background:var(--line)}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--ink);margin-top:-7.5px;border:3px solid var(--paper);box-shadow:0 0 0 1px var(--ink);transition:transform .3s var(--ease)}
+.range::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.range::-moz-range-track{height:1px;background:var(--line)}
+.range::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:var(--ink);border:3px solid var(--paper);box-shadow:0 0 0 1px var(--ink)}
+.range-scale{display:flex;justify-content:space-between;margin-top:2px;color:var(--ink-3);font-size:12px;font-variant:all-small-caps;letter-spacing:.1em}
+.summary{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding-top:14px;border-top:1px solid var(--line);margin-top:2px}
+.price{font-family:var(--serif);font-weight:400;font-size:clamp(36px,3.4vw,50px);line-height:1;letter-spacing:-.01em;margin-top:6px;display:flex}
+.price i{font-style:normal;display:inline-block;min-width:.55ch;text-align:center}
+.price i.sym{min-width:0;margin-right:.1em}
+.summary-note{margin-top:10px;color:var(--ink-3);font-size:14px;font-style:italic}
+@media(max-height:820px){.range-scale,.summary-note{display:none}.panel .divider{display:none}}
+
+/* ── editions ── */
+.editions{padding:18vh 0 14vh}
+.sec-head{display:grid;grid-template-columns:1fr 1fr;align-items:end;gap:4vw;margin-bottom:7vh}
+.sec-head .body{max-width:400px;justify-self:end}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.card{display:flex;flex-direction:column;position:relative;transition-delay:calc(var(--n)*120ms)}
+.mini{aspect-ratio:4/5;position:relative}
+.mini .plate{position:absolute;inset:0;width:100%;height:100%;opacity:.85}
+.mini .seal{position:absolute;left:50%;top:-30px;transform:translateX(-50%);background:var(--paper);border-radius:50%}
+.mini .mini-lbl{position:absolute;left:0;right:0;bottom:22px;text-align:center}
+.card-body{padding:24px 6px 0;text-align:center;display:grid;justify-items:center;gap:8px}
+.card-body .h3{margin:2px 0 4px}
+.card-body .body{max-width:34ch}
+.card-foot{display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.card-price{font-family:var(--serif);font-size:26px;font-weight:500;letter-spacing:0}
+.link{font-family:var(--body);font-weight:500;font-size:14px;letter-spacing:.14em;font-variant:all-small-caps;display:inline-flex;align-items:center;gap:10px;position:relative;padding-bottom:4px}
+.link:after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:currentColor;transform:scaleX(1);transform-origin:right;transition:transform .5s var(--ease)}
+.link:hover:after{transform:scaleX(0)}
+.link:hover{color:var(--ink)}
+
+/* ── voices ── */
+.voices{padding:8vh 0 16vh;border-top:1px solid var(--line-2)}
+.voices .wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4vw}
+.quote{display:flex;flex-direction:column;gap:18px;padding-top:22px;border-top:1px solid var(--line);align-items:flex-start}
+.quote .lead{font-size:clamp(23px,2vw,31px);font-style:italic}
+.quote .eyebrow{margin-top:auto}
+.quote .flourish{opacity:.75}
+
+/* ── faq ── */
+.faq{padding:14vh 0 18vh;border-top:1px solid var(--line-2)}
+.faq .wrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:4vw}
+.faq-list{border-top:1px solid var(--line)}
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-q{width:100%;display:grid;grid-template-columns:34px 1fr 40px;align-items:center;gap:12px;padding:24px 0;text-align:left;font-family:var(--serif);font-weight:500;font-size:clamp(24px,2.3vw,34px);line-height:1.15;letter-spacing:0}
+.faq-q .fleur{width:16px;height:16px;background:url("https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Ffleuron.png?alt=media&token=f816fffd-c5d3-408e-9632-d7d70b5e7460") center/contain no-repeat;opacity:.8;transition:transform .5s var(--ease)}
+.faq-item.open .faq-q .fleur{transform:rotate(180deg)}
+.faq-q .x{position:relative;width:14px;height:14px;justify-self:end}
+.faq-q .x:before,.faq-q .x:after{content:"";position:absolute;left:0;top:6.5px;width:14px;height:1px;background:currentColor;transition:transform .5s var(--ease)}
+.faq-q .x:after{transform:rotate(90deg)}
+.faq-item.open .faq-q .x:after{transform:rotate(0)}
+.faq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .55s var(--ease)}
+.faq-item.open .faq-a{grid-template-rows:1fr}
+.faq-a>div{overflow:hidden}
+.faq-a p{margin:0 0 26px 46px;max-width:560px}
+
+/* ── footer ── */
+footer{position:relative;min-height:100svh;display:grid;grid-template-rows:1fr auto;padding:14vh var(--pad) 76px;background:#0e0d0c;color:#f1eee6;--ink:#f1eee6;--ink-2:rgba(241,238,230,.68);--ink-3:rgba(241,238,230,.44);--line:rgba(241,238,230,.18);--paper:#0e0d0c}
+.foot-main{display:grid;grid-template-columns:1fr 1fr;gap:4vw;align-items:end}
+.foot-main .display{font-size:clamp(64px,9vw,170px)}
+.foot-cta{display:flex;flex-direction:column;gap:26px;align-items:flex-start;justify-self:end;max-width:400px}
+.foot-bottom{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:24px;padding-top:28px;border-top:1px solid var(--line);margin-top:12vh}
+.foot-links{display:flex;gap:28px;justify-content:center}
+.foot-right{text-align:right}
+.foot-crest{display:flex;align-items:center;gap:16px;margin-bottom:26px}
+.foot-crest .crest{width:72px}
+
+/* ── responsive ── */
+@media(max-width:980px){
+  .cards{grid-template-columns:1fr 1fr}
+  .atelier{height:auto}
+  .atelier .sticky{position:relative;height:auto;overflow:visible}
+  .atelier-grid{position:relative;grid-template-columns:1fr;padding:80px var(--pad) 0}
+  .stage{height:56vh}
+  .panel{padding:4vh 18px 8vh}
+  .foot-main,.sec-head,.faq .wrap{grid-template-columns:1fr}
+  .foot-cta{justify-self:start}
+  .sec-head .body{justify-self:start}
+}
+@media(max-width:760px){
+  :root{--pad:20px}
+  .nav{height:60px;grid-template-columns:1fr auto}
+  .brand{font-size:20px}
+  .nav-chapter{display:none}
+  .index{display:none}
+  .orn-corners img{width:40px;opacity:.6}
+  .nav{padding:0 var(--pad)}
+  .stage-grid{grid-template-columns:1fr;grid-template-rows:auto auto 1fr auto auto;padding-top:84px;row-gap:14px}
+  .col-l,.col-r,.foot-l,.foot-r{grid-column:1;max-width:none;justify-self:start;text-align:left}
+  .col-r{grid-row:2;padding-top:0}
+  .foot-l{grid-row:4}
+  .foot-r{grid-row:5}
+  .hero-title .l1{top:12vh}
+  .hero-title .l2{top:calc(12vh + .84em);bottom:auto;right:auto;left:calc(var(--pad) - .02em)}
+  .hero-crest{display:none}
+  .manifesto{width:calc(100vw - var(--pad)*2);bottom:8vh}
+  .hero-ui{grid-template-columns:1fr;gap:16px}
+  .hero-meta,.scroll-cue{display:none}
+  .specs{grid-template-columns:1fr 1fr 1fr;gap:0 14px}
+  .cards{grid-template-columns:1fr}
+  .voices .wrap{grid-template-columns:1fr}
+  .faq-q{grid-template-columns:26px 1fr 24px;font-size:21px}
+  .faq-a p{margin-left:38px}
+  .foot-bottom{grid-template-columns:1fr;text-align:left}
+  .foot-right{text-align:left}
+  .foot-links{justify-content:flex-start}
+  .tags{inset:auto var(--pad) 12vh;display:flex;flex-wrap:wrap;gap:8px 18px;align-content:flex-end}
+  .tag{position:static;transform:none!important;white-space:normal}
+  .tag i,.tag b{display:none}
+  .tag span{font-size:12px;padding:0;transform:none!important}
+  .anatomy-note{display:none}
+  .chips{grid-template-columns:repeat(3,1fr)}
+  .set-specs{display:none}
+  .summary{flex-wrap:wrap;gap:16px}
+  .summary .btn{font-size:13px;border-width:0 2em;border-image-width:0 2em}
+  .chip .ico{width:32px;height:32px}
+  .btn{min-height:50px;font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .w>span,.reveal,.fade{transition-duration:.01ms!important}
+  .scroll-cue .mani{animation:none}
+}
+html.vdebug .pin .sticky,html.vdebug .atelier .sticky{position:relative}
+html.vdebug *{transition:none!important;animation:none!important}
+html.vdebug{scroll-behavior:auto}
+</style>
+</head>
+<body>
+<div id="loader" aria-hidden="true"><div class="loader-inner"><img class="orn" src="./cairo-seal.svg" alt=""><div class="loader-mark">Cairo</div><div class="loader-line"></div></div></div>
+<div class="cursor" aria-hidden="true"><span>Drag</span></div>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="orn-corners" aria-hidden="true"><img class="orn orn-fixed tl" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fcorner.png?alt=media&token=5512429b-1a2c-4b60-92d8-2255e609cc69" alt=""><img class="orn orn-fixed tr" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fcorner.png?alt=media&token=5512429b-1a2c-4b60-92d8-2255e609cc69" alt=""><img class="orn orn-fixed bl" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fcorner.png?alt=media&token=5512429b-1a2c-4b60-92d8-2255e609cc69" alt=""><img class="orn orn-fixed br" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fcorner.png?alt=media&token=5512429b-1a2c-4b60-92d8-2255e609cc69" alt=""></div>
+
+<header class="nav">
+  <a class="brand" href="#hero"><img class="orn orn-fixed" src="./cairo-seal.svg" alt="">Cairo</a>
+  <div class="nav-chapter" aria-live="polite"><span class="eyebrow" id="chapLabel">Chapter <span id="chapNo"></span></span><i class="sep"></i><span class="eyebrow" id="chapName">Overture</span></div>
+  <a class="btn sm pill" href="#atelier">Design yours</a>
+  <i class="nav-progress" id="navProgress"></i>
+</header>
+<nav class="index" aria-label="Chapters">
+  <a href="#hero" data-i="0"><span>0</span></a>
+  <a href="#stone" data-i="1"><span>I</span></a>
+  <a href="#settings" data-i="2"><span>II</span></a>
+  <a href="#anatomy" data-i="3"><span>III</span></a>
+  <a href="#atelier" data-i="4"><span>IV</span></a>
+  <a href="#editions" data-i="5"><span>V</span></a>
+</nav>
+
+<div class="hero-title" id="heroTitle" aria-hidden="true">
+  <div class="display l1" id="heroL1">Own <em>your</em></div>
+  <div class="display l2" id="heroL2">Time</div>
+</div>
+
+<main>
+  <section class="pin hero" id="hero" data-chapter="Overture" data-no="">
+    <div class="sticky drag-zone">
+      <h1 class="sr-only">Cairo — An independent expression of time. Explore the Cairo watch collection.</h1>
+      <div class="hero-crest fade" style="--d:120ms"><img class="orn crest" src="./cairo-seal.svg" alt=""><div class="eyebrow">Cairo · The inaugural collection</div></div>
+      <div class="hero-ui">
+        <div class="hero-intro">
+          <p class="lead fade" style="--d:200ms">For those who measure life in moments, not minutes.</p>
+          <img class="orn divider sm fade" style="--d:300ms" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fdivider.png?alt=media&token=7abdb055-39df-4150-aced-182c96b4745b" alt="">
+          <div class="eyebrow fade" style="--d:340ms">An independent expression of time</div>
+        </div>
+        <div class="scroll-cue eyebrow fade" style="--d:500ms"><img class="orn mani down" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fmanicule.png?alt=media&token=bae92a18-1b14-420b-88da-eff53f2530e2" alt="">Scroll</div>
+        <div class="hero-meta eyebrow fade" style="--d:420ms"><span>Meridian No. 01</span><b>Ivory dial · 39 mm · Polished steel</b></div>
+      </div>
+      <p class="manifesto h2" id="manifesto">Time passes. <em>Presence remains.</em></p>
+    </div>
+  </section>
+
+  <section class="pin stone dark" id="stone" data-chapter="The Movement" data-no="I">
+    <div class="sticky drag-zone">
+      <div class="stage-grid">
+        <div class="col-l">
+          <div class="ch fade" data-at=".02"><span class="seal"><img class="orn" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fseal.png?alt=media&token=5f6f46c2-c36d-4e11-b9d9-2616b9ad0a03" alt=""><b>I</b></span><span class="eyebrow">Chapter One · The Movement</span></div>
+          <h2 class="h2 reveal-w" data-at=".03">A quiet face. <em>A restless heart.</em></h2>
+          <p class="body stone-lead fade" data-at=".06" style="--d:300ms">The Cairo design begins beneath the dial. Open bridges, concentric wheels, and a balance in motion. Precision expressed through proportion.</p>
+        </div>
+        <div class="col-r eyebrow fade" data-at=".36" id="facetNote">Caliber C.01 · Automatic movement concept</div>
+        <div class="foot-l fade" data-at=".28" id="caratBlock">
+          <div class="eyebrow" style="margin-bottom:14px">Proposed power reserve</div>
+          <div class="carat"><span class="carat-num" id="caratNum"></span><span class="eyebrow">hours</span></div>
+        </div>
+        <ul class="specs foot-r fade" data-at=".58" id="specs">
+          <li><span class="eyebrow">Winding</span><span class="h3">Automatic</span></li>
+          <li><span class="eyebrow">Caliber</span><span class="h3">C.01</span></li>
+          <li><span class="eyebrow">Display</span><span class="h3">Three-hand</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="pin settings" id="settings" data-chapter="The Collection" data-no="II">
+    <div class="sticky drag-zone">
+      <div class="stage-grid">
+        <div class="col-l">
+          <div class="ch fade" data-at=".01"><span class="seal"><img class="orn" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fseal.png?alt=media&token=5f6f46c2-c36d-4e11-b9d9-2616b9ad0a03" alt=""><b>II</b></span><span class="eyebrow">Chapter Two · The Collection</span></div>
+          <h2 class="h2 set-name" id="setName"><span class="line">The <em>Meridian</em></span></h2>
+          <img class="orn flourish set-flourish" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fflourish.png?alt=media&token=3cb00d88-9607-4108-849a-a6582cf52109" alt="">
+        </div>
+        <div class="col-r">
+          <p class="body set-desc" id="setDesc">An ivory dial, slender hands, and a polished case. The Meridian distills the Cairo signature to its essential lines.</p>
+          <ul class="set-specs" id="setSpecs"></ul>
+        </div>
+        <div class="set-count"><span id="setIdx">I</span> <span style="opacity:.5">/ V</span></div>
+        <div class="rail-lbl eyebrow" id="setKind">Meridian</div>
+        <div class="rail" id="setRail"><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pin anatomy" id="anatomy" data-chapter="Anatomy" data-no="III">
+    <div class="sticky drag-zone">
+      <div class="stage-grid">
+        <div class="col-l">
+          <div class="ch fade" data-at=".02"><span class="seal"><img class="orn" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fseal.png?alt=media&token=5f6f46c2-c36d-4e11-b9d9-2616b9ad0a03" alt=""><b>III</b></span><span class="eyebrow">Chapter Three · Anatomy</span></div>
+          <h2 class="h2 reveal-w" data-at=".03">Every part, <em>considered.</em></h2>
+        </div>
+        <div class="foot-l">
+          <p class="body anatomy-note fade" data-at=".18">From the dial and applied indices to the movement and sculpted case, each layer has a purpose. Scroll to separate the elements; drag to explore their relationships.</p>
+        </div>
+        <div class="foot-r fade" data-at=".18"><div class="eyebrow">Ref. CA-001 · Meridian concept</div></div>
+      </div>
+      <div class="tags" id="tags" aria-hidden="true">
+        <div class="tag" data-part="gem"><i></i><b></b><span>Dial &amp; hands</span></div>
+        <div class="tag" data-part="prong"><i></i><b></b><span>Applied hour indices</span></div>
+        <div class="tag" data-part="rail"><i></i><b></b><span>Polished bezel</span></div>
+        <div class="tag" data-part="collet"><i></i><b></b><span>Automatic movement</span></div>
+        <div class="tag" data-part="band"><i></i><b></b><span>Case &amp; strap</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="atelier" id="atelier" data-chapter="The Atelier" data-no="IV">
+    <div class="sticky">
+      <div class="atelier-grid">
+        <div class="stage drag-zone" id="stage">
+          <div class="stage-name">
+            <div class="ch" style="margin-bottom:12px"><span class="seal sm"><img class="orn" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fseal.png?alt=media&token=5f6f46c2-c36d-4e11-b9d9-2616b9ad0a03" alt=""><b>IV</b></span><span class="eyebrow">Chapter Four · Your design</span></div>
+            <div class="h3" id="designName">Round solitaire in platinum</div>
+          </div>
+          <div class="stage-hint eyebrow"><img class="orn mani" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fmanicule.png?alt=media&token=bae92a18-1b14-420b-88da-eff53f2530e2" alt="">Drag to rotate</div>
+        </div>
+        <div class="panel">
+          <i class="pc tl"></i><i class="pc tr"></i><i class="pc bl"></i><i class="pc br"></i>
+          <h2 class="h2">Design <em>your own.</em></h2>
+          <img class="orn divider" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fdivider.png?alt=media&token=7abdb055-39df-4150-aced-182c96b4745b" alt="">
+          <div class="opt"><div class="opt-head"><span class="eyebrow">Dial</span><span class="eyebrow val" id="valShape">Ivory</span></div>
+            <div class="chips" data-key="shape">
+              <button class="chip on" data-v="round"><span>Ivory</span></button><button class="chip" data-v="oval"><span>Obsidian</span></button><button class="chip" data-v="cushion"><span>Champagne</span></button><button class="chip" data-v="emerald"><span>Forest</span></button><button class="chip" data-v="pear"><span>Midnight</span></button><button class="chip" data-v="marquise"><span>Bordeaux</span></button>
+            </div></div>
+          <div class="opt"><div class="opt-head"><span class="eyebrow">Case size</span><span class="eyebrow val" id="valCarat">1.50 ct</span></div>
+            <input class="range" type="range" id="carat" min="0.5" max="3" step="0.05" value="1.5" aria-label="Case diameter">
+            <div class="range-scale"><span>36 mm</span><span>38 mm</span><span>41 mm</span><span>44 mm</span></div></div>
+          <div class="opt"><div class="opt-head"><span class="eyebrow">Edition</span><span class="eyebrow val" id="valSetting">Meridian</span></div>
+            <div class="chips" data-key="setting">
+              <button class="chip on" data-v="solitaire"><span>Meridian</span></button><button class="chip" data-v="cathedral"><span>Horizon</span></button><button class="chip" data-v="halo"><span>Solstice</span></button><button class="chip" data-v="bezel"><span>Obelisk</span></button><button class="chip" data-v="trilogy"><span>Nocturne</span></button>
+            </div></div>
+          <div class="opt"><div class="opt-head"><span class="eyebrow">Case finish</span><span class="eyebrow val" id="valMetal">Polished steel</span></div>
+            <div class="swatches" data-key="metal">
+              <button class="sw on" data-v="platinum" style="--c:#d7d9dd" aria-label="Polished steel"></button><button class="sw" data-v="white" style="--c:#e9e9e4" aria-label="Brushed steel"></button><button class="sw" data-v="yellow" style="--c:#dcae52" aria-label="Yellow gold"></button><button class="sw" data-v="rose" style="--c:#d69f86" aria-label="Rose gold"></button>
+            </div></div>
+          <div class="opt"><div class="opt-head"><span class="eyebrow">Strap</span><span class="eyebrow val" id="valBand">Onyx leather</span></div>
+            <div class="chips" data-key="band">
+              <button class="chip on" data-v="knife"><span>Onyx leather</span></button><button class="chip" data-v="comfort"><span>Cognac</span></button><button class="chip" data-v="flat"><span>Steel links</span></button><button class="chip" data-v="pave"><span>Milanese</span></button><button class="chip" data-v="twist"><span>Sand suede</span></button>
+            </div></div>
+          <div class="summary">
+            <div><span class="eyebrow">Concept estimate</span><div class="price" id="price"></div></div>
+            <button class="btn" id="reserve">Save this design</button>
+          </div>
+          <div class="summary-note">Design study · Indicative pricing · Save your configuration locally</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="editions" id="editions" data-chapter="Editions" data-no="V">
+    <div class="wrap">
+      <div class="sec-head">
+        <div><div class="ch reveal"><span class="seal"><img class="orn" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fseal.png?alt=media&token=5f6f46c2-c36d-4e11-b9d9-2616b9ad0a03" alt=""><b>V</b></span><span class="eyebrow">Chapter Five · Editions</span></div><h2 class="h2 reveal-w">Three expressions <em>of Cairo.</em></h2></div>
+        <p class="body reveal" style="--d:200ms">Each edition offers a different point of view. Open one in the atelier and compose your own combination of dial, case, and strap.</p>
+      </div>
+      <div class="cards" id="cards">
+        <article class="card reveal" style="--n:0"><div class="mini" data-mini="0"><img class="orn plate" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fframe.png?alt=media&token=4c1c4fb4-4f5d-4306-9efd-d0718635c3a4" alt=""><span class="seal sm"><img class="orn" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fseal.png?alt=media&token=5f6f46c2-c36d-4e11-b9d9-2616b9ad0a03" alt=""><b>1</b></span><span class="eyebrow mini-lbl">Meridian</span></div><div class="card-body"><div class="eyebrow">Obsidian · 39 mm · Steel</div><h3 class="h3">Meridian Obsidian</h3><img class="orn divider sm" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fdivider.png?alt=media&token=7abdb055-39df-4150-aced-182c96b4745b" alt=""><p class="body">A dark dial meets a polished case and onyx leather. Clarity through contrast.</p><div class="card-foot"><span class="card-price" data-price="0"></span><button class="link" data-load="0">Open in atelier</button></div></div></article>
+        <article class="card reveal" style="--n:1"><div class="mini" data-mini="1"><img class="orn plate" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fframe.png?alt=media&token=4c1c4fb4-4f5d-4306-9efd-d0718635c3a4" alt=""><span class="seal sm"><img class="orn" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fseal.png?alt=media&token=5f6f46c2-c36d-4e11-b9d9-2616b9ad0a03" alt=""><b>2</b></span><span class="eyebrow mini-lbl">Horizon</span></div><div class="card-body"><div class="eyebrow">Ivory · 38 mm · Gold tone</div><h3 class="h3">Horizon Ivory</h3><img class="orn divider sm" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fdivider.png?alt=media&token=7abdb055-39df-4150-aced-182c96b4745b" alt=""><p class="body">An ivory face, warm golden case, and a soft sand strap. An understated daily companion.</p><div class="card-foot"><span class="card-price" data-price="1"></span><button class="link" data-load="1">Open in atelier</button></div></div></article>
+        <article class="card reveal" style="--n:2"><div class="mini" data-mini="2"><img class="orn plate" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fframe.png?alt=media&token=4c1c4fb4-4f5d-4306-9efd-d0718635c3a4" alt=""><span class="seal sm"><img class="orn" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fseal.png?alt=media&token=5f6f46c2-c36d-4e11-b9d9-2616b9ad0a03" alt=""><b>3</b></span><span class="eyebrow mini-lbl">Nocturne</span></div><div class="card-body"><div class="eyebrow">Forest · 38 mm · Rose gold</div><h3 class="h3">Nocturne Forest</h3><img class="orn divider sm" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fdivider.png?alt=media&token=7abdb055-39df-4150-aced-182c96b4745b" alt=""><p class="body">A forest-green dial within a rose-gold case. Finished with a rich cognac strap.</p><div class="card-foot"><span class="card-price" data-price="2"></span><button class="link" data-load="2">Open in atelier</button></div></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="voices" data-chapter="Voices" data-no="">
+    <div class="wrap">
+      <article class="quote reveal" style="--d:0ms"><img class="orn flourish" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fflourish.png?alt=media&token=3cb00d88-9607-4108-849a-a6582cf52109" alt=""><p class="lead">“Luxury is the freedom to set your own pace.”</p><div class="eyebrow">The Cairo philosophy</div></article>
+      <article class="quote reveal" style="--d:140ms"><img class="orn flourish" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fflourish.png?alt=media&token=3cb00d88-9607-4108-849a-a6582cf52109" alt=""><p class="lead">“Nothing added without purpose. Nothing removed without thought.”</p><div class="eyebrow">The design principle</div></article>
+      <article class="quote reveal" style="--d:280ms"><img class="orn flourish" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fflourish.png?alt=media&token=3cb00d88-9607-4108-849a-a6582cf52109" alt=""><p class="lead">“Quiet from across the room. Compelling up close.”</p><div class="eyebrow">The signature</div></article>
+    </div>
+  </section>
+
+  <section class="faq" id="faq" data-chapter="Questions" data-no="">
+    <div class="wrap">
+      <div><div class="ch reveal"><img class="orn divider sm" src="https://firebasestorage.googleapis.com/v0/b/designcodeio.appspot.com/o/public%2Ftemplates%2Flocal-html%2Fvow-atelier-landing-page%2Fassets%2Fvow-atelier-assets%2Fdivider.png?alt=media&token=7abdb055-39df-4150-aced-182c96b4745b" alt=""></div><h2 class="h2 reveal-w">Asked <em>often.</em></h2></div>
+      <div class="faq-list reveal" style="--d:150ms">
+        <div class="faq-item"><button class="faq-q" aria-expanded="false"><i class="fleur"></i><span>What is the inaugural collection?</span><i class="x"></i></button><div class="faq-a"><div><p class="body">Cairo is an exclusive watch brand concept. The watches shown here are interactive design studies; final specifications and availability have not been announced.</p></div></div></div>
+        <div class="faq-item"><button class="faq-q" aria-expanded="false"><i class="fleur"></i><span>Can I personalize my watch?</span><i class="x"></i></button><div class="faq-a"><div><p class="body">Explore six dial colors, five editions, four case finishes, and five straps in the atelier. Your selections update the 3D preview and indicative estimate.</p></div></div></div>
+        <div class="faq-item"><button class="faq-q" aria-expanded="false"><i class="fleur"></i><span>How do I save a configuration?</span><i class="x"></i></button><div class="faq-a"><div><p class="body">Choose Save this design to download a personal design record. You can return to the atelier and create another combination at any time.</p></div></div></div>
+        <div class="faq-item"><button class="faq-q" aria-expanded="false"><i class="fleur"></i><span>Can I order a watch today?</span><i class="x"></i></button><div class="faq-a"><div><p class="body">The atelier is a design preview. It does not take orders, collect deposits, or submit reservations. Prices are illustrative until the collection is finalized.</p></div></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer data-chapter="Epilogue" data-no="" id="footer" class="dark">
+  <div class="foot-main">
+    <div><div class="foot-crest reveal"><img class="orn crest" src="./cairo-seal.svg" alt=""><span class="eyebrow">Your time begins here</span></div><h2 class="display reveal-w">Time, <em>made</em><br>personal.</h2></div>
+    <div class="foot-cta reveal" style="--d:200ms"><p class="lead">A dial that draws you in. A detail that stays with you. A watch that feels entirely your own.</p><a class="btn" href="#atelier">Begin your design</a></div>
+  </div>
+  <div class="foot-bottom">
+    <div class="eyebrow">© 2026 Cairo</div>
+    <div class="foot-links eyebrow"><a href="#settings">Collection</a><a href="#faq">Questions</a><a href="#atelier">Atelier</a></div>
+    <div class="eyebrow foot-right">Time, on your terms</div>
+  </div>
+</footer>
+<script type="module">
+import * as THREE from 'three';
+import { ConvexGeometry } from 'three/addons/geometries/ConvexGeometry.js';
+import { toCreasedNormals } from 'three/addons/utils/BufferGeometryUtils.js';
+
+/* ───────────────────────── utilities ───────────────────────── */
+const $ = (s, c = document) => c.querySelector(s), $$ = (s, c = document) => [...c.querySelectorAll(s)];
+const TAU = Math.PI * 2;
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const mix = (a, b, t) => a + (b - a) * t;
+const sstep = (a, b, v) => { const t = clamp((v - a) / (b - a)); return t * t * (3 - 2 * t); };
+const easeOut = t => 1 - Math.pow(1 - clamp(t), 3);
+const easeInOut = t => { t = clamp(t); return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+const params = new URLSearchParams(location.search);
+const DEBUG = params.has('debug');
+if (DEBUG) document.documentElement.classList.add('vdebug');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer = matchMedia('(pointer: fine)').matches;
+const VW = () => innerWidth || 1280, VH = () => innerHeight || 800;
+const isMobile = () => VW() < 760;
+let virtualY = null;
+const scrollTop = () => virtualY ?? (window.scrollY || 0);
+const body = document.body;
+
+/* ───────────────────────── outlines ───────────────────────── */
+const polyArea = pts => { let a = 0; for (let i = 0; i < pts.length; i++) { const p = pts[i], q = pts[(i + 1) % pts.length]; a += p[0] * q[1] - q[0] * p[1]; } return Math.abs(a) / 2; };
+const normalizePoly = pts => { const s = Math.sqrt(Math.PI / polyArea(pts)); return pts.map(p => [p[0] * s, p[1] * s]); };
+function radialTable(pts, N = 720) {
+  const tab = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    const th = i / N * TAU, dx = Math.cos(th), dz = Math.sin(th); let best = 0;
+    for (let j = 0; j < pts.length; j++) {
+      const a = pts[j], b = pts[(j + 1) % pts.length], ex = b[0] - a[0], ez = b[1] - a[1];
+      const D = -dx * ez + ex * dz; if (Math.abs(D) < 1e-9) continue;
+      const t = (ex * a[1] - a[0] * ez) / D, u = (dx * a[1] - dz * a[0]) / D;
+      if (u >= -1e-6 && u <= 1 + 1e-6 && t > best) best = t;
+    }
+    tab[i] = best;
+  }
+  return th => { const f = (((th % TAU) + TAU) % TAU) / TAU * N; const i = Math.floor(f), t = f - i; return tab[i % N] * (1 - t) + tab[(i + 1) % N] * t; };
+}
+const circlePoly = (n = 96) => Array.from({ length: n }, (_, i) => [Math.cos(i / n * TAU), Math.sin(i / n * TAU)]);
+const ellipsePoly = (a, b, n = 96) => Array.from({ length: n }, (_, i) => [a * Math.cos(i / n * TAU), b * Math.sin(i / n * TAU)]);
+const superPoly = (a, b, e, n = 96) => Array.from({ length: n }, (_, i) => { const t = i / n * TAU, c = Math.cos(t), s = Math.sin(t); return [a * Math.sign(c) * Math.pow(Math.abs(c), 2 / e), b * Math.sign(s) * Math.pow(Math.abs(s), 2 / e)]; });
+const octPoly = (a, b, c) => [[a, b - c], [a - c, b], [-(a - c), b], [-a, b - c], [-a, -(b - c)], [-(a - c), -b], [a - c, -b], [a, -(b - c)]];
+function pearPoly() {
+  const r = .84, cy = -.34, apex = 1.36, d = apex - cy, ang = Math.acos(r / d);
+  const pts = [[0, apex]]; const a0 = Math.PI / 2 - ang, a1 = Math.PI / 2 + ang - TAU, n = 72;
+  for (let i = 0; i <= n; i++) { const t = a0 + (a1 - a0) * i / n; pts.push([r * Math.cos(t), cy + r * Math.sin(t)]); }
+  return pts;
+}
+function marquisePoly() {
+  const L = 1.28, W = .64, h = (W * W - L * L) / (2 * W), R = W - h, a0 = Math.atan2(L, -h), pts = [], n = 44;
+  for (let i = 0; i <= n; i++) { const t = a0 - 2 * a0 * i / n; pts.push([h + R * Math.cos(t), R * Math.sin(t)]); }
+  for (let i = 1; i < n; i++) { const t = -a0 + 2 * a0 * i / n; pts.push([-(h + R * Math.cos(t)), R * Math.sin(t)]); }
+  return pts;
+}
+const SHAPE_POLY = { round: () => circlePoly(), oval: () => ellipsePoly(.84, 1.2), cushion: () => superPoly(.95, 1.03, 3.2), emerald: () => octPoly(.78, 1.14, .24), pear: pearPoly, marquise: marquisePoly };
+const SHAPE_NAME = { round: 'Ivory', oval: 'Obsidian', cushion: 'Champagne', emerald: 'Forest', pear: 'Midnight', marquise: 'Bordeaux' };
+const OUT = {};
+const outline = shape => OUT[shape] || (OUT[shape] = (() => { const poly = normalizePoly(SHAPE_POLY[shape]()); return { poly, o: radialTable(poly) }; })());
+
+/* ───────────────────────── gem geometry ───────────────────────── */
+function facesToGeometry(V, F, center) {
+  const pos = [], nor = [], n = new THREE.Vector3(), c = new THREE.Vector3(), tmp = new THREE.Vector3();
+  for (const f of F) {
+    n.set(0, 0, 0); c.set(0, 0, 0);
+    for (let i = 0; i < f.length; i++) { const a = V[f[i]], b = V[f[(i + 1) % f.length]]; n.x += (a[1] - b[1]) * (a[2] + b[2]); n.y += (a[2] - b[2]) * (a[0] + b[0]); n.z += (a[0] - b[0]) * (a[1] + b[1]); c.x += a[0] / f.length; c.y += a[1] / f.length; c.z += a[2] / f.length; }
+    n.normalize();
+    const idx = f.slice();
+    if (n.dot(tmp.copy(c).sub(center)) < 0) { idx.reverse(); n.negate(); }
+    for (let i = 1; i < idx.length - 1; i++) { for (const k of [idx[0], idx[i], idx[i + 1]]) { pos.push(...V[k]); nor.push(n.x, n.y, n.z); } }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+  return g;
+}
+function brilliantGeometry(o) {
+  const rt = .56, hc = .30, rs = .79, g = .022, hp = .86, rl = .27, c8 = Math.cos(Math.PI / 8);
+  const ys = g + (1 - rs * c8) * (hc - g) / (1 - rt), yl = (rl * c8 - 1) * (hp - g) - g;
+  const V = [], add = (r, y, th) => { const s = o(th); V.push([r * s * Math.cos(th), y, r * s * Math.sin(th)]); return V.length - 1; };
+  const T = [], S = [], GT = [], GB = [], L = [];
+  for (let k = 0; k < 8; k++) T.push(add(rt, hc, k * Math.PI / 4));
+  for (let k = 0; k < 8; k++) S.push(add(rs, ys, (k + .5) * Math.PI / 4));
+  for (let m = 0; m < 16; m++) GT.push(add(1, g, m * Math.PI / 8));
+  for (let m = 0; m < 16; m++) GB.push(add(1, -g, m * Math.PI / 8));
+  for (let k = 0; k < 8; k++) L.push(add(rl, yl, (k + .5) * Math.PI / 4));
+  const C = V.push([0, -hp, 0]) - 1;
+  const F = [T.slice()];
+  for (let k = 0; k < 8; k++) {
+    const k1 = (k + 1) % 8, km = (k + 7) % 8, a = 2 * k, b = 2 * k + 1, c = (2 * k + 2) % 16;
+    F.push([T[k], S[k], T[k1]], [T[k], S[km], GT[a], S[k]], [S[k], GT[a], GT[b]], [S[k], GT[b], GT[c]], [L[k], GB[b], GB[a]], [L[k], GB[c], GB[b]], [GB[a], L[km], C, L[k]]);
+  }
+  for (let m = 0; m < 16; m++) { const m1 = (m + 1) % 16; F.push([GT[m], GB[m], GB[m1], GT[m1]]); }
+  return facesToGeometry(V, F, new THREE.Vector3(0, -.2, 0));
+}
+function stepCutGeometry(poly) {
+  const hc = .27, hp = .8, g = .022, pts = [];
+  const ring = (s, y) => poly.forEach(p => pts.push(new THREE.Vector3(p[0] * s, y, p[1] * s)));
+  ring(.64, hc); ring(.8, hc * .64); ring(.92, hc * .3); ring(1, g); ring(1, -g); ring(.84, -hp * .3); ring(.62, -hp * .62);
+  const zk = poly.reduce((m, p) => Math.max(m, Math.abs(p[1])), 0) * .3;
+  pts.push(new THREE.Vector3(0, -hp, -zk), new THREE.Vector3(0, -hp, zk));
+  return new ConvexGeometry(pts);
+}
+const GEO = {};
+const gemGeo = shape => GEO[shape] || (GEO[shape] = shape === 'emerald' ? stepCutGeometry(outline(shape).poly) : brilliantGeometry(outline(shape).o));
+const GEO_EDGES = {};
+const gemEdges = shape => GEO_EDGES[shape] || (GEO_EDGES[shape] = new THREE.EdgesGeometry(gemGeo(shape), 8));
+
+/* ───────────────────────── materials ───────────────────────── */
+let envGem = null, envMetal = null, roughTex = null;
+const METALS = {
+  platinum: { c: 0xe3e5e9, r: .15, name: 'Polished steel', price: 900 },
+  white: { c: 0xf0f0eb, r: .12, name: 'Brushed steel', price: 450 },
+  yellow: { c: 0xf1c46e, r: .16, name: 'Yellow gold', price: 450 },
+  rose: { c: 0xe6b19c, r: .16, name: 'Rose gold', price: 450 }
+};
+/* soft blotchy micro-polish map: green channel modulates roughness so highlights breathe instead of reading as CG-flat */
+function makeRoughTex() {
+  const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d');
+  x.fillStyle = '#c8c8c8'; x.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < 320; i++) {
+    const r = 6 + Math.random() * 46, v = Math.random() < .5 ? 255 : 140, g = x.createRadialGradient(0, 0, 0, 0, 0, r);
+    g.addColorStop(0, `rgba(${v},${v},${v},.32)`); g.addColorStop(1, `rgba(${v},${v},${v},0)`);
+    x.save(); x.translate(Math.random() * 256, Math.random() * 256); x.fillStyle = g; x.fillRect(-r, -r, r * 2, r * 2); x.restore();
+  }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(3, 1); return t;
+}
+const metalMat = id => new THREE.MeshPhysicalMaterial({ color: METALS[id].c, metalness: 1, roughness: METALS[id].r * 1.3, roughnessMap: roughTex, envMap: envMetal, envMapIntensity: 1.0 });
+function makeGemInstanced(count, scale) {
+  const g = new THREE.Group(), im = new THREE.InstancedMesh(gemGeo('round'), gemRayMat('round'), count);
+  im.material.uniforms.uEnvI.value = 1.15;
+  g.add(im); g.userData.set = (i, m) => im.setMatrixAt(i, m);
+  return g;
+}
+
+/* ───────────────────────── sweeps ───────────────────────── */
+function fixWinding(pos, uv, refFn) {
+  const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), n = new THREE.Vector3(), ctr = new THREE.Vector3();
+  for (let i = 0; i < pos.length; i += 9) {
+    a.fromArray(pos, i); b.fromArray(pos, i + 3); c.fromArray(pos, i + 6);
+    n.subVectors(b, a).cross(c.clone().sub(a)); ctr.addVectors(a, b).add(c).multiplyScalar(1 / 3);
+    if (n.dot(ctr.clone().sub(refFn(ctr))) < 0) {
+      for (let k = 0; k < 3; k++) { const t = pos[i + 3 + k]; pos[i + 3 + k] = pos[i + 6 + k]; pos[i + 6 + k] = t; }
+      const u = i / 3 * 2; for (let k = 0; k < 2; k++) { const t = uv[u + 2 + k]; uv[u + 2 + k] = uv[u + 4 + k]; uv[u + 4 + k] = t; }
+    }
+  }
+}
+function quadsToGeometry(P, segs, n, refFn, crease = Math.PI / 4) {
+  const pos = [], uv = [];
+  const push = (i, j) => { const p = P(i, j); pos.push(p[0], p[1], p[2]); uv.push(i / segs, j / n); };
+  for (let i = 0; i < segs; i++) for (let j = 0; j < n; j++) { push(i, j); push(i + 1, j); push(i + 1, j + 1); push(i, j); push(i + 1, j + 1); push(i, j + 1); }
+  fixWinding(pos, uv, refFn);
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.computeVertexNormals();
+  g.scale(1000, 1000, 1000); const c = toCreasedNormals(g, crease); c.scale(.001, .001, .001); return c;
+}
+/* shoulder(k): profile scale around the top of the shank so the band swells into the head */
+const wrapAngle = a => { a = (a + Math.PI) % TAU; if (a < 0) a += TAU; return a - Math.PI; };
+const shoulder = (k, w = .95) => th => { const d = Math.abs(wrapAngle(th - Math.PI / 2)); const t = clamp(d / w); return 1 + (k - 1) * (1 - t * t * (3 - 2 * t)); };
+function sweepRing(profile, R, segs = 320, scaleFn = null) {
+  const n = profile.length;
+  const P = (i, j) => { const th = i / segs * TAU, p = profile[j % n], s = scaleFn ? scaleFn(th) : 1, r = R + p[0] * s; return [r * Math.cos(th), r * Math.sin(th), p[1] * s]; };
+  return quadsToGeometry(P, segs, n, c => { const th = Math.atan2(c.y, c.x); return new THREE.Vector3(R * Math.cos(th), R * Math.sin(th), 0); });
+}
+function sweepOutline(profile, o, r, y, segs = 200) {
+  const n = profile.length, cx = profile.reduce((a, p) => a + p[0], 0) / n, cy = profile.reduce((a, p) => a + p[1], 0) / n;
+  const P = (i, j) => { const th = i / segs * TAU, p = profile[j % n], rr = o(th) * r + p[0]; return [rr * Math.cos(th), y + p[1], rr * Math.sin(th)]; };
+  return quadsToGeometry(P, segs, n, c => { const th = Math.atan2(c.z, c.x), rr = o(th) * r + cx; return new THREE.Vector3(rr * Math.cos(th), y + cy, rr * Math.sin(th)); }, Math.PI / 3);
+}
+function outlineTube(o, r, y, tube, segs = 96) {
+  const pts = []; for (let i = 0; i < segs; i++) { const th = i / segs * TAU, rr = o(th) * r; pts.push(new THREE.Vector3(rr * Math.cos(th), y, rr * Math.sin(th))); }
+  return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true, 'centripetal'), segs * 2, tube, 16, true);
+}
+/* tapered tube with a rounded end cap: prongs, claws, cathedral arches */
+function taperedTube(curve, r0, r1, segs = 48, radial = 16) {
+  const fr = curve.computeFrenetFrames(segs, false), pos = [], nor = [], uv = [], idx = [];
+  const ring = (p, N, B, T, r, phi, v) => {
+    for (let j = 0; j <= radial; j++) {
+      const a = j / radial * TAU, cx = Math.cos(a), sx = Math.sin(a);
+      const nx = cx * N.x + sx * B.x, ny = cx * N.y + sx * B.y, nz = cx * N.z + sx * B.z;
+      const cp = Math.cos(phi), sp = Math.sin(phi);
+      pos.push(p.x + r * cp * nx + r * sp * T.x, p.y + r * cp * ny + r * sp * T.y, p.z + r * cp * nz + r * sp * T.z);
+      nor.push(cp * nx + sp * T.x, cp * ny + sp * T.y, cp * nz + sp * T.z); uv.push(j / radial, v);
+    }
+  };
+  for (let i = 0; i <= segs; i++) { const t = i / segs; ring(curve.getPointAt(t), fr.normals[i], fr.binormals[i], fr.tangents[i], mix(r0, r1, t), 0, t); }
+  const capN = 5, pe = curve.getPointAt(1), N = fr.normals[segs], B = fr.binormals[segs], T = fr.tangents[segs];
+  for (let k = 1; k <= capN; k++) ring(pe, N, B, T, r1, k / capN * Math.PI / 2, 1);
+  const rings = segs + 1 + capN;
+  for (let i = 0; i < rings - 1; i++) for (let j = 0; j < radial; j++) { const a = i * (radial + 1) + j, b = a + radial + 1; idx.push(a, a + 1, b, b, a + 1, b + 1); }
+  const g = new THREE.BufferGeometry(); g.setIndex(idx); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  /* orient faces outward (check the first triangle against its vertex normal) */
+  const A = new THREE.Vector3().fromArray(pos, idx[0] * 3), Bv = new THREE.Vector3().fromArray(pos, idx[1] * 3), C = new THREE.Vector3().fromArray(pos, idx[2] * 3), fn = Bv.clone().sub(A).cross(C.clone().sub(A));
+  if (fn.dot(new THREE.Vector3().fromArray(nor, idx[0] * 3)) < 0) { for (let i = 0; i < idx.length; i += 3) { const t = idx[i + 1]; idx[i + 1] = idx[i + 2]; idx[i + 2] = t; } g.setIndex(idx); }
+  return g;
+}
+class Strand extends THREE.Curve { constructor(R, a, k, ph) { super(); this.R = R; this.a = a; this.k = k; this.ph = ph; } getPoint(t, o = new THREE.Vector3()) { const th = t * TAU, w = this.k * th + this.ph, r = this.R + this.a * Math.cos(w); return o.set(r * Math.cos(th), r * Math.sin(th), this.a * Math.sin(w)); } }
+function bandProfile(kind, bw, bt) {
+  const pts = [];
+  if (kind === 'knife') { pts.push([bt * .64, 0], [bt * .3, bw * .42], [bt * .12, bw * .5], [-bt * .2, bw * .5], [-bt * .42, bw * .34], [-bt * .5, 0], [-bt * .42, -bw * .34], [-bt * .2, -bw * .5], [bt * .12, -bw * .5], [bt * .3, -bw * .42]); }
+  else if (kind === 'flat') { const rr = bw * .18, cs = [[bt / 2, bw / 2, 1, 1], [-bt / 2, bw / 2, -1, 1], [-bt / 2, -bw / 2, -1, -1], [bt / 2, -bw / 2, 1, -1]]; for (const [x, y, sx, sy] of cs) for (let i = 0; i <= 6; i++) { const a = i / 6 * Math.PI / 2; const ax = sx > 0 ? (sy > 0 ? 0 : -Math.PI / 2) : (sy > 0 ? Math.PI / 2 : Math.PI); pts.push([x - sx * rr + rr * Math.cos(ax + a), y - sy * rr + rr * Math.sin(ax + a)]); } }
+  else { for (let i = 0; i < 36; i++) { const a = i / 36 * TAU, c = Math.cos(a), s = Math.sin(a); pts.push([bt / 2 * Math.sign(c) * Math.pow(Math.abs(c), .72), bw / 2 * Math.sign(s) * Math.pow(Math.abs(s), .72)]); } }
+  return pts;
+}
+
+/* ───────────────────────── ring builder ───────────────────────── */
+const _q = new THREE.Quaternion(), _m = new THREE.Matrix4(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0);
+function setExplode(obj, base, ex) { obj.userData.base = base.clone(); obj.userData.ex = ex.clone(); obj.position.copy(base); }
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+function lathe(pts, mat, segs = 64) { return new THREE.Mesh(new THREE.LatheGeometry(pts.map(p => new THREE.Vector2(p[0], p[1])), segs), mat); }
+function buildHead(shape, Rs, opts) {
+  const { setting, prongs, mat, parts } = opts;
+  const h = new THREE.Group(); const { o } = outline(shape);
+  const seat = .16 + Rs * .62;
+  const gem = makeGem(shape, Rs); setExplode(gem, V(0, seat, 0), V(0, .72, 0)); h.add(gem);
+  const edges = new THREE.LineSegments(gemEdges(shape), new THREE.LineBasicMaterial({ color: 0x0d0d10, transparent: true, opacity: 0, depthTest: false })); gem.userData.outer.add(edges); edges.visible = false;
+  const gemAnchor = new THREE.Object3D(); gemAnchor.position.set(Rs * .92, 0, 0); gem.add(gemAnchor);
+  const headFocus = new THREE.Object3D(); headFocus.position.set(0, seat * .55, 0); h.add(headFocus); if (parts) parts.headFocus = headFocus;
+  /* turned collet: a small cone with a lip, the base of every head */
+  const cr = .05 + Rs * .075;
+  const collet = lathe([[0, -.02], [cr * .62, -.02], [cr * .78, .0], [cr * .86, .05], [cr, .11], [cr * .96, .15], [cr * .7, .19], [cr * .3, .2], [0, .2]], mat);
+  setExplode(collet, V(0, .02, 0), V(0, -.03, 0)); h.add(collet);
+  if (parts) { parts.gem = gem; parts.gemAnchor = gemAnchor; parts.edges = edges; parts.collet = collet; parts.head = h; }
+  if (setting === 'bezel') {
+    /* slim collar around the girdle, an open gallery below it and four posts down to the collet */
+    const prof = [[-.02, -.085], [.026, -.085], [.04, -.04], [.04, .018], [.028, .05], [.004, .042]];
+    const bz = new THREE.Mesh(sweepOutline(prof, o, Rs, seat), mat); setExplode(bz, V(0, 0, 0), V(0, .38, 0)); h.add(bz);
+    const y2 = Math.max(seat - .32, .2);
+    const r2 = new THREE.Mesh(outlineTube(o, Rs * .55 + .02, 0, .009 + Rs * .018), mat); setExplode(r2, V(0, y2, 0), V(0, .09, 0)); h.add(r2);
+    const posts = [];
+    for (let i = 0; i < 4; i++) {
+      const a = Math.PI / 4 + i * Math.PI / 2, d = V(Math.cos(a), 0, Math.sin(a)), sc = o(a) * Rs;
+      const pts = [d.clone().multiplyScalar(cr * .25).setY(.09), d.clone().multiplyScalar(cr * .7).setY(.15), d.clone().multiplyScalar(sc * .55 + .02).setY(y2), d.clone().multiplyScalar(sc * .96).setY(seat - .1), d.clone().multiplyScalar(sc * 1.0 + .012).setY(seat - .045)];
+      const post = new THREE.Mesh(taperedTube(new THREE.CatmullRomCurve3(pts, false, 'centripetal', .6), .012 + Rs * .028, .01 + Rs * .02), mat);
+      setExplode(post, V(0, 0, 0), d.clone().multiplyScalar(.3).setY(.2)); h.add(post); posts.push(post);
+    }
+    if (parts) { parts.bezel = bz; parts.rails = [r2]; parts.prongs = posts; parts.tips = []; }
+  } else {
+    const N = prongs, off = N === 4 ? Math.PI / 4 : Math.PI / 6, pr = [], tips = [];
+    const pw = .014 + Rs * .03;
+    for (let i = 0; i < N; i++) {
+      const a = off + i * TAU / N, d = V(Math.cos(a), 0, Math.sin(a)), s = o(a) * Rs;
+      const pts = [d.clone().multiplyScalar(cr * .25).setY(.09), d.clone().multiplyScalar(cr * .7).setY(.15), d.clone().multiplyScalar(s * .9 + .02).setY(seat - .22), d.clone().multiplyScalar(s * 1.0 + .03).setY(seat - .02), d.clone().multiplyScalar(s * .9 + .012).setY(seat + .09 * Rs + .03), d.clone().multiplyScalar(s * .8).setY(seat + .12 * Rs + .025)];
+      const curve = new THREE.CatmullRomCurve3(pts, false, 'centripetal', .6);
+      const m = new THREE.Mesh(taperedTube(curve, pw * 1.25, pw * .78), mat);
+      setExplode(m, V(0, 0, 0), d.clone().multiplyScalar(.42).setY(.3));
+      const tip = new THREE.Object3D(); tip.position.copy(pts[5]); setExplode(tip, pts[5], d.clone().multiplyScalar(.42).setY(.3));
+      h.add(m, tip); pr.push(m); tips.push(tip);
+    }
+    const r1 = new THREE.Mesh(outlineTube(o, Rs * .84 + .018, 0, .009 + Rs * .02), mat); setExplode(r1, V(0, seat - .17, 0), V(0, .22, 0)); h.add(r1);
+    const railAnchor = new THREE.Object3D(); railAnchor.position.set(Rs * .84 + .018, 0, 0); r1.add(railAnchor); if (parts) parts.railAnchor = railAnchor;
+    const y2 = Math.max(seat - .34, .2);
+    const r2 = new THREE.Mesh(outlineTube(o, Rs * .52 + .02, 0, .008 + Rs * .018), mat); setExplode(r2, V(0, y2, 0), V(0, .09, 0)); h.add(r2);
+    if (parts) { parts.prongs = pr; parts.tips = tips; parts.rails = [r1, r2]; }
+    if (setting === 'halo') {
+      const hr = Rs + .1, per = Array.from({ length: 64 }, (_, i) => o(i / 64 * TAU) * hr).reduce((a, b) => a + b) / 64 * TAU;
+      const n = Math.round(per / .132), halo = new THREE.Group();
+      const stones = makeGemInstanced(n, .06), beads = new THREE.InstancedMesh(new THREE.SphereGeometry(.017, 10, 8), mat, n * 2);
+      for (let i = 0; i < n; i++) {
+        const th = i / n * TAU, rr = o(th) * hr; _p.set(rr * Math.cos(th), 0, rr * Math.sin(th));
+        _q.setFromAxisAngle(V(-Math.sin(th), 0, Math.cos(th)), .14); _s.setScalar(.06); _m.compose(_p, _q, _s); stones.userData.set(i, _m);
+        const t2 = (i + .5) / n * TAU, r2b = o(t2) * hr;
+        for (let k = 0; k < 2; k++) { const rk = r2b + (k ? .034 : -.034); _p.set(rk * Math.cos(t2), .016, rk * Math.sin(t2)); _q.identity(); _s.setScalar(1); _m.compose(_p, _q, _s); beads.setMatrixAt(i * 2 + k, _m); }
+      }
+      const cup = new THREE.Mesh(sweepOutline([[-.05, -.1], [.05, -.1], [.056, -.03], [.044, -.005], [-.044, -.005]], o, hr, 0), mat);
+      halo.add(stones, beads, cup); setExplode(halo, V(0, seat - .02, 0), V(0, .5, 0)); h.add(halo);
+      if (parts) parts.halo = halo;
+    }
+  }
+  return { group: h, seat };
+}
+function buildRing(cfg) {
+ const {shape='round',metal='platinum',band='knife',setting='solitaire',carat=1.5}=cfg;
+ const g=new THREE.Group(), parts={tips:[],prongs:[],rails:[]};
+ const mat=metalMat(metal); const dark=new THREE.MeshStandardMaterial({color:0x171815,roughness:.5,metalness:.25});
+ const face=new THREE.Group();g.add(face);
+ const cyl=(r,h,m,z,parent=face)=>{const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,96),m);o.rotation.x=Math.PI/2;o.position.z=z;parent.add(o);return o;};
+ const caseBody=cyl(.86,.24,mat,0);parts.band=caseBody;parts.bandAnchor=caseBody;parts.bandFocus=caseBody;
+ const movement=new THREE.Group();face.add(movement);movement.position.z=.14;parts.collet=movement;
+ cyl(.72,.045,new THREE.MeshStandardMaterial({color:0x8f815f,metalness:.85,roughness:.35}),0,movement);
+ for(let i=0;i<7;i++){let a=i*2.4,r=.18+(i%3)*.09,x=Math.cos(a)*.38,y=Math.sin(a)*.38;const wheel=new THREE.Group();wheel.position.set(x,y,.04+i*.004);movement.add(wheel);const tor=new THREE.Mesh(new THREE.TorusGeometry(r,.018,8,48),mat);wheel.add(tor);for(let j=0;j<8;j++){const bar=new THREE.Mesh(new THREE.BoxGeometry(r*1.8,.018,.016),mat);bar.rotation.z=j*Math.PI/4;wheel.add(bar);}cyl(.025,.03,dark,.025,wheel);}
+ const dial=new THREE.Group();face.add(dial);dial.position.z=.30;parts.gem=dial;parts.gemAnchor=dial;
+ const colors={round:'#eee8d8',oval:'#161b1c',cushion:'#bca471',emerald:'#173e35',pear:'#152b49',marquise:'#562931'};
+ const c=document.createElement('canvas');c.width=c.height=1024;const ctx=c.getContext('2d');ctx.fillStyle=colors[shape];ctx.fillRect(0,0,1024,1024);const light=shape==='round'||shape==='cushion';ctx.strokeStyle=light?'#776544':'#cbbc94';ctx.fillStyle=ctx.strokeStyle;
+ for(let i=0;i<60;i++){let a=i*TAU/60;ctx.lineWidth=i%5===0?5:2;ctx.beginPath();ctx.moveTo(512+Math.sin(a)*(i%5===0?414:438),512-Math.cos(a)*(i%5===0?414:438));ctx.lineTo(512+Math.sin(a)*454,512-Math.cos(a)*454);ctx.stroke();}
+ ctx.textAlign='center';ctx.font='54px Georgia';ctx.fillText('CAIRO',512,335);ctx.font='17px Georgia';ctx.fillText('A U T O M A T I C',512,380);ctx.font='22px Georgia';ctx.fillText('C.01',512,740);
+ if(setting==='trilogy'||setting==='cathedral'){ctx.beginPath();ctx.arc(512,654,84,0,TAU);ctx.stroke();ctx.fillRect(509,598,6,59);}
+ const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;const dm=new THREE.MeshStandardMaterial({map:tex,roughness:.44,metalness:.12});const disk=new THREE.Mesh(new THREE.CircleGeometry(.746,96),dm);dial.add(disk);
+ const indices=new THREE.Group();dial.add(indices);parts.tips.push(indices);
+ for(let i=0;i<12;i++){const a=i*TAU/12;const o=new THREE.Mesh(new THREE.BoxGeometry(.022,.096,.018),mat);o.position.set(Math.sin(a)*.63,Math.cos(a)*.63,.016);o.rotation.z=-a;indices.add(o);}
+ for(const [len,width,angle] of [[.37,.029,-Math.PI/3],[.53,.019,Math.PI/3],[.57,.006,Math.PI*.86]]){const hand=new THREE.Group();hand.rotation.z=-angle;hand.position.z=.042;dial.add(hand);const mesh=new THREE.Mesh(new THREE.BoxGeometry(width,len,.016),mat);mesh.position.y=len*.37;hand.add(mesh);}
+ cyl(.043,.035,mat,.058,dial);
+ const bezel=new THREE.Mesh(new THREE.TorusGeometry(.79,setting==='bezel'?.07:.043,16,96),mat);bezel.position.z=.32;face.add(bezel);parts.railAnchor=bezel;
+ const crown=cyl(.10,.14,mat,0);crown.rotation.set(0,0,Math.PI/2);crown.position.set(.92,0,0);
+ const strap=new THREE.Group();g.add(strap);const sc={knife:0x151715,comfort:0x633c27,flat:0xa5aaac,pave:0x9c9c92,twist:0xb0a084}[band];const sm=new THREE.MeshStandardMaterial({color:sc,roughness:band==='flat'||band==='pave'?.24:.82,metalness:band==='flat'||band==='pave'?.9:0});
+ for(const sign of [-1,1]){for(let j=0;j<(band==='flat'||band==='pave'?9:1);j++){const linked=band==='flat'||band==='pave';const o=new THREE.Mesh(new THREE.BoxGeometry(.68,linked?.105:.97,.105),sm);o.position.set(0,sign*(linked?.95+j*.108:1.36),-.035);strap.add(o);}for(const x of [-.35,.35]){const lug=new THREE.Mesh(new THREE.BoxGeometry(.105,.35,.16),mat);lug.position.set(x,sign*.84,0);face.add(lug);}}
+ setExplode(dial,V(0,0,.30),V(0,.3,.65));setExplode(bezel,V(0,0,.32),V(0,.65,.8));setExplode(movement,V(0,0,.14),V(0,-.1,.3));setExplode(strap,V(0,0,0),V(0,-.25,-.2));
+ if(cfg.gemOnly){dial.visible=false;bezel.visible=false;strap.visible=false;caseBody.visible=false;crown.visible=false;face.children.filter(o=>o!==movement).forEach(o=>o.visible=false);}
+ g.scale.setScalar(.82*(.92+(carat-.5)*.05));g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+ return {group:g,parts,cfg};
+}
+function explodeRing(ring, e) {
+  ring.group.traverse(o => { if (o.userData.base) o.position.copy(o.userData.base).addScaledVector(o.userData.ex, e); });
+}
+function setRingOpacity(ring, a) {
+  if (ring._op === a) return; ring._op = a;
+  ring.group.traverse(o => { if (o.material && !o.isLineSegments) { const m = o.material; if (m.isGemRay) { m.uniforms.uOpacity.value = a; m.transparent = a < 1; m.depthWrite = a > .5; return; } m.transparent = a < 1; m.opacity = a; m.depthWrite = a > .5; } });
+}
+
+/* ───────────────────────── renderer, env, scenes ───────────────────────── */
+const canvas = $('#gl');
+const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance', preserveDrawingBuffer: DEBUG });
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2)); renderer.setSize(VW(), VH()); renderer.setClearColor(0x000000, 0);
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.VSMShadowMap;
+/* studio: a soft gradient dome + a few large softboxes; the gem variant adds thin strips for fire */
+function studio(k, sparkle = false) {
+  const s = new THREE.Group();
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(40, 32, 16), new THREE.ShaderMaterial({ side: THREE.BackSide, uniforms: { k: { value: k }, top: { value: new THREE.Vector3(.78, .79, .82) }, mid: { value: new THREE.Vector3(.34, .34, .35) }, bot: { value: new THREE.Vector3(.10, .10, .11) } }, vertexShader: 'varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}', fragmentShader: 'varying vec3 vP;uniform float k;uniform vec3 top,mid,bot;void main(){float h=normalize(vP).y;vec3 c=h>0.?mix(mid,top,smoothstep(0.,1.,pow(h,.8))):mix(mid,bot,smoothstep(0.,1.,-h));gl_FragColor=vec4(c*k,1.);}' }));
+  s.add(sky);
+  const panel = (w, h, x, y, z, i, col = 0xffffff) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(col).multiplyScalar(i * k), side: THREE.DoubleSide })); m.position.set(x, y, z); m.lookAt(0, 0, 0); s.add(m); return m; };
+  if (!sparkle) {
+    panel(9, 4.5, 0, 8, 3, 5.5, 0xfffaf2);        /* top softbox, slightly warm */
+    panel(1.3, 10, -9, 2.5, 3.5, 9, 0xf4f7ff);    /* tall cool strip: the crisp highlight along the shank */
+    panel(5, 7, 9, 1.5, 3, 2.6, 0xffffff);        /* soft right fill */
+    panel(12, .7, 0, 4.5, -9, 4.5, 0xfff1e0);     /* warm rim bar behind */
+    panel(7, 2.5, 0, -2.5, 9, 1.3, 0xffffff);     /* low front fill so the near face is not dead */
+    panel(8, 8, 0, -8.5, 0, .9, 0xf3efe6);        /* bounce */
+  } else {
+    sky.material.uniforms.k.value = k; sky.material.uniforms.top.value.set(.62, .63, .66); sky.material.uniforms.mid.value.set(.2, .2, .21); sky.material.uniforms.bot.value.set(.12, .12, .125);
+    panel(7, 3.2, 0, 7.5, 2.5, 3.2); panel(2.6, 8, -8.5, 2.5, 3, 7, 0xeef2ff); panel(1, 8, 7.5, 2.5, 4, 13); panel(10, .55, 0, 4.5, -7, 9, 0xfff4e6); panel(7, 7, 0, -8, 1, 2.4, 0xf3efe6); panel(.5, 6, -6, -1, 6, 9);
+    const N = 16; for (let i = 0; i < N; i++) { const a = i / N * TAU + .3, r = 9, y = [-3, 1.5, 4, -1, 2.5, 5.5][i % 6], wdt = [.35, .8, .5, 1.2, .6, .3][i % 6]; panel(wdt, 3 + (i % 3), Math.cos(a) * r, y, Math.sin(a) * r, 8 + (i % 4) * 3, [0xffffff, 0xfff1dc, 0xe8f0ff][i % 3]); }
+    panel(9, 9, 0, -9, 0, 2.2, 0xffffff);
+  }
+  return s;
+}
+const pmrem = new THREE.PMREMGenerator(renderer);
+envMetal = pmrem.fromScene(studio(1).add(new THREE.Object3D()), .035).texture;
+envGem = pmrem.fromScene(studio(1, true).add(new THREE.Object3D()), .01).texture; pmrem.dispose();
+roughTex = makeRoughTex();
+/* ───────────────────────── ray-traced gem ─────────────────────────
+   A cube map rendered from inside each cut stores facet normal + distance per direction. The fragment
+   shader refracts the view ray into the stone and follows it through internal bounces: at every facet the
+   Fresnel split sends part of the light out (sampled from the HDR studio with per-channel dispersion) and
+   keeps the rest bouncing, with total internal reflection handled exactly. */
+let gemEnvCube = null; const NORMAL_CUBES = {};
+const GEM_CENTER = new THREE.Vector3(0, -.16, 0);
+function makeGemEnvCube() {
+  const rt = new THREE.WebGLCubeRenderTarget(512, { type: THREE.HalfFloatType, generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter, magFilter: THREE.LinearFilter });
+  const cam = new THREE.CubeCamera(.1, 200, rt); const sc = new THREE.Scene(); sc.add(studio(1, true)); cam.update(renderer, sc);
+  return rt.texture;
+}
+function normalCube(shape) {
+  if (NORMAL_CUBES[shape]) return NORMAL_CUBES[shape];
+  const rt = new THREE.WebGLCubeRenderTarget(512, { type: THREE.HalfFloatType, generateMipmaps: false, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter });
+  const cam = new THREE.CubeCamera(.001, 20, rt); cam.position.copy(GEM_CENTER);
+  const sc = new THREE.Scene();
+  const m = new THREE.Mesh(gemGeo(shape), new THREE.ShaderMaterial({ side: THREE.BackSide, uniforms: { uC: { value: GEM_CENTER } },
+    vertexShader: 'varying vec3 vN;varying vec3 vP;void main(){vN=normal;vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+    fragmentShader: 'uniform vec3 uC;varying vec3 vN;varying vec3 vP;void main(){vec3 n=normalize(vN);gl_FragColor=vec4(n,dot(n,vP-uC));}' }));
+  sc.add(m); cam.update(renderer, sc); m.geometry = null;
+  return NORMAL_CUBES[shape] = rt.texture;
+}
+const GEM_VERT = `varying vec3 vObjPos;varying vec3 vObjN;varying vec3 vCamObj;varying mat3 vRot;
+void main(){vObjPos=position;vObjN=normal;
+#ifdef USE_INSTANCING
+mat4 M=modelMatrix*instanceMatrix;
+#else
+mat4 M=modelMatrix;
+#endif
+vCamObj=(inverse(M)*vec4(cameraPosition,1.)).xyz;vRot=mat3(M);gl_Position=projectionMatrix*viewMatrix*M*vec4(position,1.);}`;
+const GEM_FRAG = `
+uniform samplerCube uNormalCube;uniform samplerCube uEnv;uniform vec3 uCenter;
+uniform vec3 uIor;uniform float uEnvI;uniform float uOpacity;uniform float uEdgeTint;
+varying vec3 vObjPos;varying vec3 vObjN;varying vec3 vCamObj;varying mat3 vRot;
+vec3 env(vec3 d){vec3 w=normalize(vRot*d);return textureCubeLodEXT(uEnv,w,1.).rgb*uEnvI;}
+void hitSurface(vec3 p,vec3 t,out vec3 q,out vec3 n){
+  /* cube map holds each facet's plane (normal, offset from the centre): exact within a facet, so no texel quantisation */
+  vec3 pc=p-uCenter;
+  vec4 s=textureCube(uNormalCube,t);n=normalize(s.xyz);float den=dot(t,n);float tt=(s.w-dot(n,pc))/(abs(den)<1e-4?1e-4:den);q=p+t*max(tt,0.);
+  for(int i=0;i<3;i++){vec3 d2=normalize(q-uCenter);s=textureCube(uNormalCube,d2);n=normalize(s.xyz);den=dot(t,n);tt=(s.w-dot(n,pc))/(abs(den)<1e-4?1e-4:den);q=p+t*max(tt,0.);}
+}
+vec3 trace(vec3 p0,vec3 n0){
+  vec3 v=normalize(p0-vCamObj);
+  float iorG=uIor.g;float F0=pow((iorG-1.)/(iorG+1.),2.);
+  float cosI=clamp(dot(-v,n0),0.,1.);float Fs=F0+(1.-F0)*pow(1.-cosI,5.);
+  vec3 col=Fs*env(reflect(v,n0));
+  vec3 thr=vec3(1.-Fs);
+  vec3 t=refract(v,n0,1./iorG);vec3 p=p0;
+  for(int b=0;b<5;b++){
+    vec3 q,n;hitSurface(p,t,q,n);
+    float ci=clamp(dot(t,n),0.,1.);float k=1.-iorG*iorG*(1.-ci*ci);
+    if(k>0.){
+      float ct=sqrt(k);float F=F0+(1.-F0)*pow(1.-ct,5.);
+      vec3 eg=refract(t,-n,iorG);vec3 er=refract(t,-n,uIor.r);vec3 eb=refract(t,-n,uIor.b);
+      if(dot(er,er)<.5)er=eg;if(dot(eb,eb)<.5)eb=eg;
+      vec3 e=vec3(env(er).r,env(eg).g,env(eb).b);
+      col+=thr*(1.-F)*e;thr*=F;
+    }
+    t=reflect(t,n);p=q;
+    if(max(thr.r,max(thr.g,thr.b))<.015)break;
+  }
+  col+=thr*env(t)*.6;
+  return col;
+}
+void main(){
+  vec3 n0=normalize(vObjN);
+  vec3 dpx=dFdx(vObjPos),dpy=dFdy(vObjPos);
+  /* 4-tap rotated-grid supersampling of the interior so facet borders seen through the stone stay crisp */
+  vec3 col=trace(vObjPos+dpx*(-.375)+dpy*(.125),n0)+trace(vObjPos+dpx*(.125)+dpy*(.375),n0)+trace(vObjPos+dpx*(.375)+dpy*(-.125),n0)+trace(vObjPos+dpx*(-.125)+dpy*(-.375),n0);
+  col*=.25;
+  gl_FragColor=vec4(col,uOpacity);
+  #include <tonemapping_fragment>
+  #include <colorspace_fragment>
+}`;
+function gemRayMat(shape) {
+  const m = new THREE.ShaderMaterial({
+    uniforms: { uNormalCube: { value: normalCube(shape) }, uEnv: { value: gemEnvCube }, uCenter: { value: GEM_CENTER }, uIor: { value: new THREE.Vector3(2.395, 2.42, 2.465) }, uEnvI: { value: 1.25 }, uOpacity: { value: 1 }, uEdgeTint: { value: 0 } },
+    vertexShader: GEM_VERT, fragmentShader: GEM_FRAG, transparent: false, toneMapped: true
+  });
+  m.isGemRay = true; return m;
+}
+function makeGem(shape, scale) {
+  const g = new THREE.Group(), geo = gemGeo(shape);
+  const outer = new THREE.Mesh(geo, gemRayMat(shape)); outer.scale.setScalar(scale);
+  g.add(outer); g.userData.outer = outer; g.userData.inner = null;
+  return g;
+}
+// Diamond environment is not needed for Cairo watches.
+function backdrop() {
+  const g = studio(.3);
+  g.traverse(o => { if (o.isMesh) { o.onBeforeRender = r => { const ts = r.getRenderTarget() === null; o.material.colorWrite = !ts; o.material.depthWrite = !ts; }; o.renderOrder = -10; } });
+  return g;
+}
+/* shadow floor: an invisible plane that only shows the ring's real cast shadow, feathered at the edges */
+function makeShadow(size = 4) {
+  const c = document.createElement('canvas'); c.width = c.height = 256; const x = c.getContext('2d');
+  const gr = x.createRadialGradient(128, 128, 0, 128, 128, 128); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(.55, 'rgba(255,255,255,.9)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = gr; x.fillRect(0, 0, 256, 256);
+  const mat = new THREE.ShadowMaterial({ opacity: 0, transparent: true, depthWrite: false }); mat.alphaMap = new THREE.CanvasTexture(c);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(size, size), mat); m.receiveShadow = true;
+  m.rotation.x = -Math.PI / 2; m.renderOrder = -7; return m;
+}
+function shadowLight(intensity, mapSize) {
+  const l = new THREE.DirectionalLight(0xffffff, intensity); l.position.set(-2.4, 5, 3.2); l.castShadow = true;
+  l.shadow.mapSize.set(mapSize, mapSize); l.shadow.radius = 5; l.shadow.blurSamples = 10; l.shadow.bias = -.0004; l.shadow.normalBias = .01;
+  const c = l.shadow.camera; c.left = c.bottom = -2.6; c.right = c.top = 2.6; c.near = .5; c.far = 16;
+  return l;
+}
+/* dune landscape: relief-only shading (white highlights / black shade with alpha) so it sits on any page colour */
+const SNOISE = 'vec3 mod289(vec3 x){return x-floor(x*(1./289.))*289.;}vec2 mod289(vec2 x){return x-floor(x*(1./289.))*289.;}vec3 permute(vec3 x){return mod289(((x*34.)+1.)*x);}float snoise(vec2 v){const vec4 C=vec4(.211324865405187,.366025403784439,-.577350269189626,.024390243902439);vec2 i=floor(v+dot(v,C.yy));vec2 x0=v-i+dot(i,C.xx);vec2 i1=(x0.x>x0.y)?vec2(1.,0.):vec2(0.,1.);vec4 x12=x0.xyxy+C.xxzz;x12.xy-=i1;i=mod289(i);vec3 p=permute(permute(i.y+vec3(0.,i1.y,1.))+i.x+vec3(0.,i1.x,1.));vec3 m=max(.5-vec3(dot(x0,x0),dot(x12.xy,x12.xy),dot(x12.zw,x12.zw)),0.);m=m*m;m=m*m;vec3 x=2.*fract(p*C.www)-1.;vec3 h=abs(x)-.5;vec3 ox=floor(x+.5);vec3 a0=x-ox;m*=1.79284291400159-.85373472095314*(a0*a0+h*h);vec3 g;g.x=a0.x*x0.x+h.x*x0.y;g.yz=a0.yz*x12.xz+h.yz*x12.yw;return 130.*dot(m,g);}';
+function makeDunes() {
+  const geo = new THREE.PlaneGeometry(320, 150, 300, 140);
+  const H = `float H(vec2 p){return 3.6*snoise(p*.028)+1.4*snoise(p*.075+vec2(7.,3.))+.36*snoise(p*.2+vec2(1.,9.))+.09*snoise(p*.55+vec2(4.,2.));}`;
+  const mat = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false,
+    uniforms: { uOffset: { value: new THREE.Vector2(0, 0) }, uStrength: { value: .09 }, uLight: { value: new THREE.Vector3(-.5, .58, .64).normalize() } },
+    vertexShader: SNOISE + H + `uniform vec2 uOffset;varying vec3 vQ;varying float vFade;varying float vDist;
+      void main(){vec2 q=position.xy+uOffset;float y=H(q);vec3 P=vec3(position.x,y,-position.y);vQ=vec3(q.x,y,q.y);
+        vec4 wp=modelMatrix*vec4(P,1.);float d=length(wp.xyz-cameraPosition);vDist=d;vFade=smoothstep(125.,20.,d)*smoothstep(4.,9.,d);
+        gl_Position=projectionMatrix*viewMatrix*wp;}`,
+    fragmentShader: SNOISE + H + `uniform float uStrength;uniform vec3 uLight;varying vec3 vQ;varying float vFade;varying float vDist;
+      void main(){if(vFade<.012)discard;vec2 q=vQ.xz;float e=mix(.28,1.2,smoothstep(10.,110.,vDist));float y=H(q);float hx=H(q+vec2(e,0.));float hz=H(q+vec2(0.,e));
+        vec3 n=normalize(vec3(-(hx-y)/e,1.,(hz-y)/e));
+        /* wind ripples across the slope, fading with distance */
+        float rip=(snoise(vec2(q.x*1.7+n.z*3.,q.y*.32+n.x*2.))*.6+snoise(q*3.4)*.25)*smoothstep(70.,12.,vDist);
+        float grain=snoise(q*9.)*.05;
+        float s=dot(n,uLight)-uLight.y+rip*.07+grain;
+        float a=clamp(abs(s)*2.4,0.,1.)*uStrength*vFade;
+        vec3 c=s>0.?vec3(1.):vec3(0.);gl_FragColor=vec4(c,a);}`
+  });
+  const m = new THREE.Mesh(geo, mat); m.position.set(0, -4.2, -82); m.renderOrder = -8; m.frustumCulled = false; return m;
+}
+const scene = new THREE.Scene(); scene.environment = envMetal; scene.add(backdrop());
+const camera = new THREE.PerspectiveCamera(26, VW() / VH(), .1, 220); camera.position.set(0, 0, 7);
+const key = shadowLight(1.15, 1536); scene.add(key); scene.add(key.target);
+const fill = new THREE.DirectionalLight(0xfff4e8, .35); fill.position.set(4, 1, -3); scene.add(fill);
+const rig = new THREE.Group(); scene.add(rig);
+const shadow = makeShadow(); scene.add(shadow);
+const dunes = makeDunes(); scene.add(dunes);
+const halfH = () => Math.tan(camera.fov * Math.PI / 360) * 7, halfW = () => halfH() * camera.aspect;
+
+/* ───────────────────────── ring library ───────────────────────── */
+const PRESETS = {
+  hero: { shape: 'round', carat: 1.6, setting: 'solitaire', metal: 'platinum', band: 'knife', prongs: 6 },
+  stone: { gemOnly: true, shape: 'round', carat: 2.14 },
+  solitaire: { shape: 'round', carat: 1.6, setting: 'solitaire', metal: 'platinum', band: 'knife', prongs: 6 },
+  halo: { shape: 'cushion', carat: 1.4, setting: 'halo', metal: 'yellow', band: 'pave' },
+  trilogy: { shape: 'emerald', carat: 1.2, setting: 'trilogy', metal: 'rose', band: 'comfort' },
+  bezel: { shape: 'oval', carat: 1.5, setting: 'bezel', metal: 'white', band: 'flat' },
+  cathedral: { shape: 'pear', carat: 1.3, setting: 'cathedral', metal: 'platinum', band: 'twist', prongs: 4 },
+  anatomy: { shape: 'round', carat: 1.5, setting: 'solitaire', metal: 'platinum', band: 'knife', prongs: 6 }
+};
+const RINGS = {};
+const ring = id => RINGS[id] || (RINGS[id] = buildRing(PRESETS[id]));
+const SETTINGS = [{"id": "solitaire", "kind": "Meridian", "name": "The <em>Meridian</em>", "desc": "An ivory dial, slender hands, and a polished case. The Meridian distills the Cairo signature to its essential lines.", "specs": [["Collection", "Meridian"], ["Display", "Three-hand"], ["Case", "36–44 mm"], ["Status", "Design concept"]]}, {"id": "halo", "kind": "Solstice", "name": "The <em>Solstice</em>", "desc": "Warm metal catches the light around a champagne face. An expression of the golden hour.", "specs": [["Collection", "Solstice"], ["Display", "Three-hand"], ["Case", "36–44 mm"], ["Status", "Design concept"]]}, {"id": "trilogy", "kind": "Nocturne", "name": "The <em>Nocturne</em>", "desc": "Deep color, warm rose gold, and the stillness of the evening. A study in contrast.", "specs": [["Collection", "Nocturne"], ["Display", "Three-hand"], ["Case", "36–44 mm"], ["Status", "Design concept"]]}, {"id": "bezel", "kind": "Obelisk", "name": "The <em>Obelisk</em>", "desc": "A crisp bezel and an uncluttered dial. Architectural restraint, sized for everyday presence.", "specs": [["Collection", "Obelisk"], ["Display", "Three-hand"], ["Case", "36–44 mm"], ["Status", "Design concept"]]}, {"id": "cathedral", "kind": "Horizon", "name": "The <em>Horizon</em>", "desc": "A blue horizon framed in polished metal. Made for the space between one destination and the next.", "specs": [["Collection", "Horizon"], ["Display", "Three-hand"], ["Case", "36–44 mm"], ["Status", "Design concept"]]}];
+
+/* ───────────────────────── configurator state ───────────────────────── */
+const SETTING_NAME = { solitaire: 'Meridian', cathedral: 'Horizon', halo: 'Solstice', bezel: 'Obelisk', trilogy: 'Nocturne' };
+const BAND_NAME = { knife: 'Onyx leather', comfort: 'Cognac', flat: 'Steel links', pave: 'Milanese', twist: 'Sand suede' };
+const EDITIONS = [
+  { shape: 'oval', carat: 1.5, setting: 'solitaire', metal: 'platinum', band: 'knife', prongs: 4 },
+  { shape: 'round', carat: 1.2, setting: 'cathedral', metal: 'yellow', band: 'twist', prongs: 4 },
+  { shape: 'emerald', carat: 1.2, setting: 'trilogy', metal: 'rose', band: 'comfort' }
+];
+const config = { shape: 'round', carat: 1.5, setting: 'solitaire', metal: 'platinum', band: 'knife' };
+function price(c) {
+  const base = { solitaire: 1900, cathedral: 2400, halo: 3400, bezel: 2600, trilogy: 4300 }[c.setting];
+  const shapeK = { round: 1, oval: .93, cushion: .88, emerald: .9, pear: .9, marquise: .92 }[c.shape];
+  const stone = 3600 * Math.pow(c.carat, 1.72) * shapeK;
+  const bandP = { knife: 0, comfort: 0, flat: 120, pave: 1400, twist: 650 }[c.band];
+  return Math.round((base + stone + METALS[c.metal].price + bandP) / 10) * 10;
+}
+const fmt = n => '€' + n.toLocaleString('en-IE');
+function setDigits(el, str) {
+  const need = str.length; while (el.children.length > need) el.removeChild(el.lastChild); while (el.children.length < need) el.appendChild(document.createElement('i'));
+  [...el.children].forEach((c, i) => { const ch = str[i]; if (c.textContent !== ch) c.textContent = ch; c.className = /[\d]/.test(ch) ? '' : (ch === '€' ? 'sym' : 'dot'); });
+}
+let configRing = null, configDirty = true;
+const SHARED_GEO = () => new Set([...Object.values(GEO), ...Object.values(GEO_EDGES)]);
+function disposeRing(r) {
+  const shared = SHARED_GEO();
+  r.group.traverse(o => { if (o.geometry && !shared.has(o.geometry)) o.geometry.dispose(); if (o.material) { if(o.material.map) o.material.map.dispose(); o.material.dispose(); } });
+}
+function rebuildConfig() {
+  if (configRing) { rig.remove(configRing.group); disposeRing(configRing); }
+  configRing = buildRing({ ...config, prongs: config.setting === 'solitaire' ? 6 : 4 });
+  RINGS.config = configRing; configDirty = false;
+  if (shown && shown.id === 'config') { shown.ring = configRing; rig.add(configRing.group); }
+  $('#designName').textContent = `${SETTING_NAME[config.setting]} · ${SHAPE_NAME[config.shape]} dial`;
+  setDigits($('#price'), fmt(price(config)));
+}
+function syncConfigUI() {
+  $$('[data-key]').forEach(grp => { const k = grp.dataset.key; $$('button', grp).forEach(b => (b.classList.toggle('on', b.dataset.v === config[k]), b.setAttribute('aria-pressed', String(b.dataset.v === config[k])))); });
+  $('#carat').value = config.carat; $('#valShape').textContent = SHAPE_NAME[config.shape]; $('#valCarat').textContent = Math.round(34.4 + config.carat * 3.2) + ' mm';
+  $('#valSetting').textContent = SETTING_NAME[config.setting]; $('#valMetal').textContent = METALS[config.metal].name; $('#valBand').textContent = BAND_NAME[config.band];
+}
+let rebuildTimer = 0;
+function scheduleRebuild(now = false) { clearTimeout(rebuildTimer); if (now) { rebuildConfig(); pulse = 1; } else rebuildTimer = setTimeout(() => { rebuildConfig(); pulse = 1; }, 90); }
+$$('[data-key]').forEach(grp => grp.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; config[grp.dataset.key] = b.dataset.v; syncConfigUI(); scheduleRebuild(true); focusOn({ shape: 'stone', setting: 'head', band: 'band', metal: 'ring' }[grp.dataset.key] || 'ring'); }));
+$('#carat').addEventListener('input', e => { config.carat = +e.target.value; $('#valCarat').textContent = Math.round(34.4 + config.carat * 3.2) + ' mm'; scheduleRebuild(); focusOn('stone'); });
+$$('[data-load]').forEach(b => b.addEventListener('click', () => { Object.assign(config, EDITIONS[+b.dataset.load]); delete config.prongs; syncConfigUI(); scheduleRebuild(true); $('#atelier').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }); }));
+$$('[data-price]').forEach(el => el.textContent = 'From ' + fmt(price(EDITIONS[+el.dataset.price])));
+$('#reserve').addEventListener('click', () => {
+ const record = { brand: 'Cairo', edition: SETTING_NAME[config.setting], dial: SHAPE_NAME[config.shape], diameter: Math.round(34.4+config.carat*3.2)+' mm', case: METALS[config.metal].name, strap: BAND_NAME[config.band], indicativePrice: fmt(price(config)), note: 'Design concept. Not an order or reservation.' };
+ const url=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json'})); const a=document.createElement('a');a.href=url;a.download='cairo-design.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('#reserve').textContent='Design saved';setTimeout(()=>$('#reserve').textContent='Save this design',2500);
+});
+syncConfigUI();
+
+/* ───────────────────────── mini stages (editions) ───────────────────────── */
+const minis = $$('.mini').map((el, i) => {
+  const s = new THREE.Scene(); s.environment = envMetal; s.add(backdrop()); const shd = makeShadow(3.2); shd.material.opacity = .3; shd.position.set(0, -1.03, .1); s.add(shd);
+  const cam = new THREE.PerspectiveCamera(26, .8, .1, 120); cam.position.set(0, .1, 6.2); cam.lookAt(0, .05, 0);
+  const l = shadowLight(1.15, 1024); s.add(l); s.add(l.target);
+  const r = buildRing(EDITIONS[i]); const g = new THREE.Group(); g.add(r.group); g.scale.setScalar(.66); s.add(g);
+  const st = { el, scene: s, cam, group: g, spin: 0, hover: 0 };
+  el.parentElement.addEventListener('pointerenter', () => st.hover = 1); el.parentElement.addEventListener('pointerleave', () => st.hover = 0);
+  return st;
+});
+
+/* ───────────────────────── poses ───────────────────────── */
+const sections = $$('[data-chapter]');
+const S = { hero: $('#hero'), stone: $('#stone'), settings: $('#settings'), anatomy: $('#anatomy'), atelier: $('#atelier'), editions: $('#editions'), footer: $('#footer') };
+const stage = $('#stage'), setColL = $('#settings .col-l'), setColR = $('#settings .col-r');
+function progress(el) { const r = el.getBoundingClientRect(), d = el.offsetHeight - VH(); return clamp(-r.top / Math.max(1, d)); }
+function poseFor(id, p) {
+  const m = isMobile();
+  switch (id) {
+    case 'hero': return { ring: 'hero', xf: m ? 0 : mix(0, .3, easeInOut(sstep(.42, .7, p))), yf: m ? mix(-.2, .16, easeInOut(sstep(.42, .7, p))) : mix(-.02, .06, easeInOut(sstep(.42, .7, p))), scale: (m ? .46 : .7) * mix(.98, 1.12, easeInOut(p)), rx: mix(.62, .95, easeInOut(sstep(0, .75, p))), spin: .055, visible: true, ryBase: mix(0, 1.4, p) };
+    case 'stone': return { ring: 'stone', xf: m ? 0 : .3, yf: m ? -.12 : 0, scale: m ? .46 : .62, rx: mix(1.05, .12, easeInOut(sstep(.18, .78, p))), spin: .12, visible: true, ryBase: p * 2.2, edges: sstep(.3, .48, p) * (1 - sstep(.82, .95, p)) };
+    case 'settings': {
+      const i = Math.min(4, Math.floor(p * 5));
+      if (m) return { ring: SETTINGS[i].id, xf: .05, yf: -.36, scale: .4, rx: .62, spin: .08, visible: true, ryBase: 0 };
+      /* sit the ring in the gap between the two text columns and size it to fit there */
+      const L = setColL.getBoundingClientRect(), R = setColR.getBoundingClientRect();
+      const left = L.right + 24, right = R.left - 24, cx = (left + right) / 2, avail = Math.max(240, right - left);
+      const sc = Math.min(.68, (avail / VW() * 2 * halfW()) / 2.5);
+      return { ring: SETTINGS[i].id, xf: cx / VW() * 2 - 1, yf: -.04, scale: sc, rx: .62, spin: .08, visible: true, ryBase: 0 };
+    }
+    case 'anatomy': return { ring: 'anatomy', xf: m ? 0 : .22, yf: m ? -.02 : -.02, scale: m ? .42 : .62, rx: .5, spin: .07, visible: true, ryBase: -.2, explode: sstep(.12, .5, p) * (1 - sstep(.86, 1, p)), lockSpin: true };
+    case 'atelier': {
+      const r = stage.getBoundingClientRect(), m = isMobile(); const cx = r.left + r.width / 2, cy = r.top + r.height * .55;
+      const base = ((m ? .46 : .46) * r.height / VH() * 2 * halfH()) / 2.75;
+      const F = FOCUS[atelierFocus.mode], sc = base * F.zoom;
+      let xf = cx / VW() * 2 - 1, yf = -(cy / VH() * 2 - 1);
+      if (F.part && shown && shown.id === 'config') {
+        const obj = shown.ring.parts[F.part];
+        if (obj) {
+          /* keep the focused part at the stage centre while the ring turns around it */
+          obj.getWorldPosition(_wp); const k = sc / Math.max(1e-3, rig.scale.x);
+          xf = (xf * halfW() - (_wp.x - rig.position.x) * k) / halfW(); yf = (yf * halfH() - (_wp.y - rig.position.y) * k) / halfH();
+        }
+      }
+      return { ring: 'config', xf, yf, scale: sc, rx: F.rx, spin: F.spin, visible: true, ryBase: 0, snap: !F.part };
+    }
+    case 'footer': return { ring: 'hero', xf: m ? 0 : .32, yf: m ? .28 : .18, scale: m ? .36 : .46, rx: .62, spin: .36, visible: true, ryBase: 0 };
+    default: return { ring: null, visible: false, xf: 0, yf: -.3, scale: .6, rx: .55, spin: .08, ryBase: 0 };
+  }
+}
+let activeId = 'hero', activeP = 0;
+/* atelier camera focus: which part the stage frames after a choice */
+const FOCUS = { ring: { zoom: 1, rx: .58, spin: .26, part: null }, stone: { zoom: 1.8, rx: .98, spin: .34, part: 'gem' }, head: { zoom: 2.0, rx: .42, spin: .08, part: 'headFocus' }, band: { zoom: 2.1, rx: .5, spin: .08, part: 'bandFocus' } };
+const atelierFocus = { mode: 'ring', t: -1e9 };
+function focusOn(mode) { atelierFocus.mode = mode; atelierFocus.t = time; }
+function findActive() {
+  const y = VH() * .5;
+  for (const s of sections) { const r = s.getBoundingClientRect(); if (r.top <= y && r.bottom > y) return s; }
+  return null;
+}
+
+/* ───────────────────────── DOM choreography ───────────────────────── */
+function splitWords(el) {
+  let i = 0; const walk = node => { [...node.childNodes].forEach(ch => { if (ch.nodeType === 3) { const frag = document.createDocumentFragment(); ch.textContent.split(/(\s+)/).forEach(t => { if (!t) return; if (/^\s+$/.test(t)) { frag.append(document.createTextNode(' ')); return; } const w = document.createElement('span'); w.className = 'w'; w.style.setProperty('--i', i++); const s = document.createElement('span'); s.textContent = t; w.append(s); frag.append(w); }); ch.replaceWith(frag); } else if (ch.nodeType === 1 && ch.tagName !== 'BR') walk(ch); }); };
+  walk(el);
+}
+$$('.reveal-w').forEach(splitWords);
+const heroL1 = $('#heroL1'), heroL2 = $('#heroL2'), heroTitle = $('#heroTitle'), manifesto = $('#manifesto'), heroUI = $('.hero-ui');
+splitWords(manifesto);
+const caratNum = $('#caratNum');
+const gates = $$('[data-at]');
+const setName = $('#setName'), setDesc = $('#setDesc'), setSpecs = $('#setSpecs'), setIdx = $('#setIdx'), setKind = $('#setKind'), railBars = $$('#setRail i');
+let curSet = -1, descTimer = 0;
+function renderSpecs(i) { setSpecs.innerHTML = SETTINGS[i].specs.map(([k, v]) => `<li><span class="eyebrow">${k}</span><span>${v}</span></li>`).join(''); }
+function setSetting(i, instant) {
+  if (i === curSet) return; const dir = i > curSet ? 1 : -1; curSet = i; const d = SETTINGS[i];
+  setIdx.textContent = ['I', 'II', 'III', 'IV', 'V'][i]; setKind.textContent = d.kind;
+  const old = $$('.line', setName), line = document.createElement('span'); line.className = 'line' + (instant ? '' : ' enter'); line.innerHTML = d.name;
+  old.forEach(o => { o.classList.add('exit'); if (dir < 0) o.style.transform = 'translateY(105%)'; setTimeout(() => o.remove(), 1000); });
+  if (dir < 0 && !instant) line.style.transform = 'translateY(-105%)';
+  setName.append(line); line.getBoundingClientRect(); requestAnimationFrame(() => { line.classList.remove('enter'); line.style.transform = ''; });
+  if (instant) { setDesc.textContent = d.desc; renderSpecs(i); return; }
+  setDesc.classList.add('out'); setSpecs.classList.add('out'); clearTimeout(descTimer);
+  descTimer = setTimeout(() => { setDesc.textContent = d.desc; renderSpecs(i); setDesc.classList.remove('out'); setSpecs.classList.remove('out'); }, 380);
+}
+renderSpecs(0); curSet = 0;
+const tags = $$('.tag'), tagsWrap = $('#tags');
+const _wp = new THREE.Vector3(), _wp2 = new THREE.Vector3();
+const tagPart = {
+  gem: r => r.parts.gemAnchor,
+  prong: r => { let best = null, bx = Infinity; for (const p of r.parts.tips) { p.getWorldPosition(_wp2); if (_wp2.x < bx) { bx = _wp2.x; best = p; } } return best; },
+  rail: r => r.parts.railAnchor, collet: r => r.parts.collet, band: r => r.parts.bandAnchor
+};
+const TAG_SIDE = { gem: 'right', prong: 'left', rail: 'right', collet: 'left', band: 'right' };
+function projectX(obj) { obj.getWorldPosition(_wp2); _wp2.project(camera); return (_wp2.x + 1) / 2 * VW(); }
+function updateTags(r, alpha) {
+  if (!r || !r.parts.gem) { tags.forEach(t => t.style.opacity = 0); return; }
+  const w = VW(), h = VH();
+  /* projected horizontal extent of the exploded ring */
+  let minX = Infinity, maxX = -Infinity;
+  for (const o of [...r.parts.tips, r.parts.gem, r.parts.band]) { const x = projectX(o); minX = Math.min(minX, x); maxX = Math.max(maxX, x); }
+  const bandR = (1.1 * rig.scale.x) / halfW() * w / 2; minX = Math.min(minX, projectX(r.parts.band) - bandR); maxX = Math.max(maxX, projectX(r.parts.band) + bandR);
+  const gap = isMobile() ? 14 : 44;
+  tags.forEach(t => {
+    const obj = tagPart[t.dataset.part](r); if (!obj) return; obj.getWorldPosition(_wp);
+    _wp.project(camera); const x = (_wp.x + 1) / 2 * w, y = (1 - _wp.y) / 2 * h;
+    const sw = t.lastElementChild.offsetWidth + 12, pad = isMobile() ? 16 : 40, need = sw + 14;
+    let left = TAG_SIDE[t.dataset.part] === 'left';
+    const roomL = x - pad, roomR = w - pad - x;
+    if (left && roomL < need && roomR >= need) left = false; else if (!left && roomR < need && roomL >= need) left = true; else if (roomL < need && roomR < need) left = roomL > roomR;
+    let lx = left ? minX - gap : maxX + gap;
+    if (left) lx = Math.max(lx, pad + sw); else lx = Math.min(lx, w - pad - sw);
+    let len = left ? x - lx : lx - x; if (len < 12) len = Math.max(12, Math.min(len, left ? x - pad - sw : w - pad - sw - x));
+    t.classList.toggle('left', left); t.style.transform = `translate(${x}px,${y}px) translate(${left ? 'calc(-100% + 3px)' : '-3px'},-50%)`;
+    t.style.setProperty('--len', len.toFixed(1) + 'px');
+    t.style.opacity = alpha; t.style.setProperty('--k', alpha.toFixed(3));
+  });
+}
+function sectionFX(id, p, s) {
+  if (id === 'hero') {
+    const t1 = easeInOut(sstep(0, .42, p)), t2 = easeInOut(sstep(.02, .46, p));
+    heroTitle.style.opacity = 1; heroTitle.style.visibility = 'visible';
+    heroL1.style.transform = `translate(${-t1 * 14}vw, ${-t1 * 26}vh)`; heroL1.style.opacity = 1 - sstep(.22, .42, p);
+    heroL2.style.transform = `translate(${t2 * 14}vw, ${t2 * 26}vh)`; heroL2.style.opacity = 1 - sstep(.24, .46, p);
+    heroUI.style.opacity = 1 - sstep(.04, .22, p); heroUI.style.transform = `translateY(${sstep(.04, .22, p) * 24}px)`;
+    const mIn = sstep(.5, .6, p), mOut = sstep(.86, .97, p);
+    manifesto.style.opacity = mIn * (1 - mOut); manifesto.style.transform = `translateY(${(1 - mIn) * 30 - mOut * 30}px)`; manifesto.style.filter = `blur(${(1 - mIn) * 6 + mOut * 6}px)`;
+    manifesto.classList.toggle('in', p > .5);
+  } else { heroTitle.style.opacity = 0; heroTitle.style.visibility = 'hidden'; }
+  if (id === 'stone') {
+    const v = mix(0, 72, easeOut(sstep(.28, .62, p))); setDigits(caratNum, v.toFixed(0));
+  }
+  if (id === 'settings') { const i = Math.min(4, Math.floor(p * 5)); setSetting(i, DEBUG); railBars.forEach((b, k) => b.style.setProperty('--f', clamp(p * 5 - k).toFixed(3))); }
+  for (const g of gates) { if (g.closest('[data-chapter]') !== s) continue; g.classList.toggle('in', p >= +g.dataset.at); }
+}
+/* gates outside their section: keep hidden state reset when section not active */
+const chapNo = $('#chapNo'), chapName = $('#chapName'), navProgress = $('#navProgress'), indexLinks = $$('.index a'), indexEl = $('.index');
+let lastChapter = '';
+function updateChrome(s) {
+  if (!s) return;
+  const name = s.dataset.chapter, no = s.dataset.no || '';
+  if (name !== lastChapter) { lastChapter = name; chapName.textContent = name; chapNo.textContent = no; chapNo.closest('.nav-chapter').classList.toggle('no-num', !no); }
+  const idx = ['hero', 'stone', 'settings', 'anatomy', 'atelier', 'editions'].indexOf(s.id);
+  indexLinks.forEach((a, i) => a.classList.toggle('active', i === idx));
+  indexEl.classList.toggle('hide', idx < 0 || idx > 3);
+  body.classList.toggle('is-dark', s.classList.contains('dark'));
+  const doc = document.documentElement; navProgress.style.transform = `scaleX(${clamp(scrollTop() / Math.max(1, doc.scrollHeight - VH()))})`;
+}
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12, rootMargin: '0px 0px -8% 0px' });
+$$('.reveal,.reveal-w,.line-in').forEach(x => { if (!x.closest('.pin')) io.observe(x); });
+$$('.faq-q').forEach(q => q.addEventListener('click', () => { const it = q.parentElement, open = !it.classList.contains('open'); $$('.faq-item.open').forEach(o => { o.classList.remove('open'); $('.faq-q', o).setAttribute('aria-expanded', 'false'); }); it.classList.toggle('open', open); q.setAttribute('aria-expanded', open); }));
+
+/* ───────────────────────── pointer: cursor + free 360° drag ───────────────────────── */
+const cursor = $('.cursor'); const DBG = { moves: 0, lastDy: 0 };
+if (finePointer && !reduced) body.classList.add('has-cursor');
+let dragging = false, dragTouch = false, lastX = 0, lastY = 0, yaw = 0, pitch = 0, yawVel = 0, pitchVel = 0, spinVel = 0, scrollImpulse = 0, pulse = 0, lastDrag = -1e9, pointerX = 0, pointerY = 0, moveT = 0;
+addEventListener('pointermove', e => {
+  cursor.style.transform = `translate(${e.clientX}px,${e.clientY}px) translate(-50%,-50%)`;
+  pointerX = e.clientX / VW() * 2 - 1; pointerY = e.clientY / VH() * 2 - 1;
+  const t = e.target; cursor.classList.toggle('on', !!t.closest?.('a,button,input,.faq-q'));
+  cursor.classList.toggle('grab', !!t.closest?.('.drag-zone') && !t.closest?.('a,button,input,p,h2,h3,li') && !dragging);
+  if (!dragging) return;
+  const dx = e.clientX - lastX, dy = e.clientY - lastY; lastX = e.clientX; lastY = e.clientY;
+  const now = performance.now(), dt = Math.max(8, now - moveT) / 1000; moveT = now;
+  const ky = .0075, kp = dragTouch ? 0 : .0075;
+  yaw += dx * ky; pitch += dy * kp; DBG.moves++; DBG.lastDy = dy;
+  yawVel = mix(yawVel, dx * ky / dt * .45, .5); pitchVel = mix(pitchVel, dy * kp / dt * .45, .5);
+  lastDrag = time;
+});
+$$('.drag-zone').forEach(z => z.addEventListener('pointerdown', e => {
+  if (e.button !== 0 || e.target.closest('a,button,input,label')) return;
+  dragging = true; dragTouch = e.pointerType === 'touch'; lastX = e.clientX; lastY = e.clientY; moveT = performance.now(); yawVel = pitchVel = 0; lastDrag = time;
+  body.classList.add('dragging');
+}));
+const endDrag = () => { if (!dragging) return; dragging = false; body.classList.remove('dragging'); lastDrag = time; };
+addEventListener('pointerup', endDrag); addEventListener('pointercancel', endDrag);
+let lastScroll = scrollTop();
+addEventListener('scroll', () => { const y = scrollTop(); scrollImpulse += y - lastScroll; lastScroll = y; }, { passive: true });
+
+/* ───────────────────────── frame loop ───────────────────────── */
+const cur = { x: 0, y: -.3, s: 0, rx: .6, ry: 0, explode: 0 };
+let spin = 0, presence = 0, shown = null, time = 0, lastT = performance.now(), duneStrength = 0, shadowA = 0, parX = 0, parY = 0;
+const DUNE_LEVEL = { hero: 1, stone: .9, settings: 1, anatomy: .8, atelier: .55, footer: 1 };
+function update(dt) {
+  time += dt;
+  const s = findActive(); const id = s ? s.id : null; const p = s ? progress(s) : 0; activeId = id; activeP = p;
+  const pose = poseFor(id, p);
+  if (window.__vow && window.__vow.override) { Object.assign(pose, window.__vow.override); if ('spinTo' in pose) { spin = pose.spinTo; spinVel = 0; yaw = pitch = 0; } }
+  if (s) sectionFX(id, p, s); updateChrome(s);
+  /* ring swap */
+  const wantId = pose.visible ? pose.ring : null;
+  const wantRing = wantId === 'config' ? (configRing || (rebuildConfig(), configRing)) : (wantId ? ring(wantId) : null);
+  const same = shown && shown.id === wantId && shown.ring === wantRing;
+  if (!same) { presence = Math.max(0, presence - dt / .32); if (presence <= 0) { if (shown) rig.remove(shown.ring.group); shown = wantRing ? { id: wantId, ring: wantRing } : null; if (shown) { rig.add(shown.ring.group); setRingOpacity(shown.ring, 0); } } }
+  else presence = Math.min(1, presence + dt / .5);
+  /* motion */
+  const k = 1 - Math.exp(-dt * (pose.snap ? 16 : 5.5));
+  cur.x += (pose.xf * halfW() - cur.x) * k; cur.y += (pose.yf * halfH() - cur.y) * k; cur.s += (pose.scale - cur.s) * k;
+  cur.rx += (pose.rx - cur.rx) * k; cur.explode += ((pose.explode || 0) - cur.explode) * (1 - Math.exp(-dt * 4));
+  /* interaction: inertia, then a gentle settle so the story choreography stays legible */
+  const idle = time - lastDrag;
+  if (dragging) atelierFocus.t = time;
+  if (atelierFocus.mode !== 'ring' && (time - atelierFocus.t > 7 || id !== 'atelier')) atelierFocus.mode = 'ring';
+  if (!dragging) {
+    yaw += yawVel * dt; pitch += pitchVel * dt;
+    const damp = Math.exp(-dt * 2.6); yawVel *= damp; pitchVel *= damp;
+    if (idle > 2.2 && id !== 'atelier') { const kk = 1 - Math.exp(-dt * .9); pitch += (0 - pitch) * kk; }
+  }
+  spinVel += scrollImpulse * (pose.lockSpin ? .0008 : .0035); scrollImpulse = 0;
+  spinVel *= Math.exp(-dt * 2.4);
+  const autoSpin = (reduced ? .05 : pose.spin) * sstep(.6, 2.6, dragging ? 0 : idle);
+  spin += (autoSpin + spinVel) * dt;
+  cur.ry += ((pose.ryBase || 0) - cur.ry) * k;
+  pulse = Math.max(0, pulse - dt * 2.2);
+  parX += (pointerX - parX) * (1 - Math.exp(-dt * 2)); parY += (pointerY - parY) * (1 - Math.exp(-dt * 2));
+  const pr = easeInOut(presence), pulseS = 1 + Math.sin(pulse * Math.PI) * .04;
+  rig.position.set(cur.x, cur.y, 0);
+  const rigS = Math.max(.0001, cur.s * mix(.82, 1, pr) * pulseS);
+  rig.scale.setScalar(rigS);
+  const breathe = reduced ? 0 : Math.sin(time * .42) * .09;
+  rig.rotation.set(cur.rx + pitch + breathe, cur.ry + Math.sin(spin)*.35 + yaw + (1 - pr) * .7, reduced ? 0 : Math.sin(time * .43) * .015);
+  if (shown) {
+    setRingOpacity(shown.ring, pr < .999 ? pr : 1);
+    if (shown.ring.parts.gem && shown.ring.parts.band) explodeRing(shown.ring, cur.explode);
+    const ea = (pose.edges || 0) * pr; const eg = shown.ring.parts.edges;
+    if (eg) { eg.visible = ea > .01; eg.material.opacity = ea * .42; }
+  }
+  /* contact shadow under the ring */
+  const isDark = !!(s && s.classList.contains('dark'));
+  const shadowTarget = shown && !isDark ? (shown.ring.parts.band ? .3 : .16) * pr : 0;
+  shadowA += (shadowTarget - shadowA) * (1 - Math.exp(-dt * 6));
+  shadow.material.opacity = shadowA * .95; shadow.visible = shadowA > .005;
+  shadow.position.set(cur.x, cur.y - 1.36 * rigS - .04, .2); shadow.scale.setScalar(Math.max(.4, rigS * 1.6));
+  key.position.set(cur.x - 2.4, cur.y + 5, 3.2); key.target.position.set(cur.x, cur.y, 0); key.shadow.camera.left = key.shadow.camera.bottom = -2.2 * Math.max(.5, rigS); key.shadow.camera.right = key.shadow.camera.top = 2.2 * Math.max(.5, rigS); key.shadow.camera.updateProjectionMatrix();
+  /* dunes: drift with scroll, tiny pointer parallax, fade per chapter */
+  const dl = (id && DUNE_LEVEL[id]) || 0;
+  duneStrength += (dl - duneStrength) * (1 - Math.exp(-dt * 3));
+  dunes.material.uniforms.uStrength.value = .09 * duneStrength * (isDark ? .38 : 1);
+  dunes.material.uniforms.uOffset.value.set(scrollTop() * .004 + parX * 1.2 + time * .06, -parY * .8);
+  dunes.visible = duneStrength > .01;
+  updateTags(id === 'anatomy' && shown && shown.id === 'anatomy' ? shown.ring : null, sstep(.15, .5, cur.explode) * pr);
+  /* minis */
+  for (const m of minis) { m.spin += dt * (.35 + m.hover * .9); m.group.rotation.set(.55 + Math.sin(time * .4) * .08, Math.sin(m.spin)*.35 + Math.sin(time * .3) * .12, 0); }
+}
+function render() {
+  const w = VW(), h = VH();
+  renderer.setScissorTest(false); renderer.setViewport(0, 0, w, h);
+  rig.visible = !!shown; renderer.render(scene, camera);
+  let any = false;
+  for (const m of minis) {
+    const r = m.el.getBoundingClientRect(); if (r.bottom < 0 || r.top > h || r.width < 4) continue; any = true;
+    const y = h - r.bottom; m.cam.aspect = r.width / r.height; m.cam.updateProjectionMatrix();
+    renderer.setViewport(r.left, y, r.width, r.height); renderer.setScissor(r.left, y, r.width, r.height); renderer.setScissorTest(true);
+    renderer.render(m.scene, m.cam);
+  }
+  if (any) renderer.setScissorTest(false);
+}
+function frame(now) {
+  const dt = Math.min(.05, Math.max(.001, (now - lastT) / 1000)); lastT = now;
+  update(dt); render(); requestAnimationFrame(frame);
+}
+addEventListener('resize', () => { renderer.setSize(VW(), VH()); camera.aspect = VW() / VH(); camera.updateProjectionMatrix(); });
+
+/* ───────────────────────── boot ───────────────────────── */
+['hero', 'stone', 'solitaire', 'anatomy'].forEach(ring);
+setDigits(caratNum, '0'); rebuildConfig();
+renderer.compile(scene, camera);
+update(.016); render();
+let booted = false;
+function boot() { if (booted) return; booted = true; body.classList.add('loaded'); setTimeout(() => $$('.hero .fade').forEach(x => x.classList.add('in')), 250); }
+Promise.all([document.fonts?.ready || Promise.resolve(), new Promise(r => setTimeout(r, 700))]).then(boot); setTimeout(boot, 3200);
+setTimeout(() => { ['halo', 'trilogy', 'bezel', 'cathedral'].forEach(ring); }, 900);
+lastT = performance.now(); requestAnimationFrame(frame);
+
+/* ───────────────────────── test hooks ───────────────────────── */
+const main = $('main'), footer = $('#footer');
+window.__vow = {
+  step(n = 1, dt = 1 / 60) { for (let i = 0; i < n; i++) update(dt); render(); },
+  vscroll(y) {
+    virtualY = y; document.documentElement.classList.add('vdebug');
+    for (const el of [main, footer]) el.style.transform = `translateY(${-y}px)`;
+    $$('.pin,.atelier').forEach(sec => { const st = $('.sticky', sec); if (sec.id === 'atelier' && VW() <= 980) { st.style.transform = ''; return; } const r = sec.getBoundingClientRect(); const off = clamp(-r.top, 0, sec.offsetHeight - VH()); st.style.transform = `translateY(${off}px)`; });
+    $$('.reveal,.reveal-w,.line-in').forEach(x => { if (!x.closest('.pin')) { const r = x.getBoundingClientRect(); x.classList.toggle('in', r.top < VH() * .92); } });
+    $$('.hero .fade').forEach(x => x.classList.add('in'));
+    lastScroll = y; scrollImpulse = 0; this.step(1);
+  },
+  settle(n = 90) { for (let i = 0; i < n; i++) update(1 / 60); render(); },
+  get state() { return { activeId, activeP, shown: shown && shown.id, presence, cur, spin, yaw, pitch, yawVel, pitchVel, dragging, idle: time - lastDrag, dbg: DBG, rings: Object.keys(RINGS) }; },
+  setConfig(c) { Object.assign(config, c); syncConfigUI(); rebuildConfig(); },
+  override: null, focusOn, atelierFocus, ring, RINGS, scene, camera, renderer, rig, THREE
+};
+window.__ready = true;
+</script>
+</body>
+</html>
